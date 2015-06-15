@@ -18,12 +18,14 @@ public class MyGame extends Game  {
 	public void render() {
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-				
-		float deltaTime = Gdx.graphics.getDeltaTime();
+		
 		// A bit of a hack, but it's an issue with Lwjgl
 		// DeltaTime will be maxed out at 10 fps (whichever is smaller).
 		// This way, when the application is paused for whatever reason, the deltaTime will remain a somewhat sane value.
-		deltaTime = Math.min(deltaTime, 1 / 30.0f);
+		//deltaTime = Math.min(deltaTime, 1 / 30.0f);
+		
+	
+		float deltaTime = Gdx.graphics.getDeltaTime();
 		getScreen().render(deltaTime);
 	}
 	

@@ -1,6 +1,8 @@
 package com.mandr.input;
 
-import com.mandr.entity.Actor;
+import com.mandr.entity.Entity;
+import com.mandr.entity.component.ComponentType;
+import com.mandr.entity.component.WeaponComponent;
 import com.mandr.weapons.Weapon;
 
 public class ReloadCommand extends Command {
@@ -10,13 +12,15 @@ public class ReloadCommand extends Command {
 	}
 
 	@Override
-	public void execute(InputTrigger keyType, Actor actor) {
+	public void execute(InputTrigger keyType, Entity entity) {
 		if(keyType == InputTrigger.INPUT_JUST_PRESSED) {	
-			Weapon weapon = actor.getActiveWeapon();
-			if(weapon == null)
+			WeaponComponent weapon = (WeaponComponent) entity.getComponent(ComponentType.COMPONENT_WEAPON);
+			if(weapon == null) return;
+			Weapon activeWeapon = weapon.getActiveWeapon();
+			if(activeWeapon == null)
 				return;
 			
-			weapon.reload();
+			activeWeapon.reload();
 		}
 	}
 

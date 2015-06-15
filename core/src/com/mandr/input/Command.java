@@ -1,6 +1,6 @@
 package com.mandr.input;
 
-import com.mandr.entity.Actor;
+import com.mandr.entity.Entity;
 
 public abstract class Command {
 	protected InputHandler input;
@@ -11,7 +11,7 @@ public abstract class Command {
 		validDuringPause = false;
 	}
 	
-	abstract public void execute(InputTrigger keyType, Actor actor);
+	abstract public void execute(InputTrigger keyType, Entity entity);
 	public abstract String toString();
 	
 	public boolean validDuringPause() {

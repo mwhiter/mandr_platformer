@@ -5,23 +5,24 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+//import com.mandr.entity.unused.DynamicEntity;
+//import com.mandr.entity.unused.Player;
 import com.mandr.game.screens.GameScreen;
-import com.mandr.physics.EntityCollider;
 
 public class EntityManager {
 	
 	private EntityCollider m_EntityCollider;
-	private LinkedList<DynamicEntity> m_Entities;
-	private ArrayList<DynamicEntity> m_ActiveEntities;	// entities that are active (near the screenBounds)
-	private ArrayList<DynamicEntity> m_AddEntities;
-	private ArrayList<DynamicEntity> m_RemoveEntities;
+	private LinkedList<Entity> m_Entities;
+	private ArrayList<Entity> m_ActiveEntities;	// entities that are active (near the screenBounds)
+	private ArrayList<Entity> m_AddEntities;
+	private ArrayList<Entity> m_RemoveEntities;
 	
 	public EntityManager() {
 		m_EntityCollider = new EntityCollider();
-		m_Entities = new LinkedList<DynamicEntity>();
-		m_ActiveEntities = new ArrayList<DynamicEntity>();
-		m_AddEntities = new ArrayList<DynamicEntity>();
-		m_RemoveEntities = new ArrayList<DynamicEntity>();
+		m_Entities = new LinkedList<Entity>();
+		m_ActiveEntities = new ArrayList<Entity>();
+		m_AddEntities = new ArrayList<Entity>();
+		m_RemoveEntities = new ArrayList<Entity>();
 	}
 	
 	public void update(float deltaTime) {
@@ -29,45 +30,55 @@ public class EntityManager {
 		m_ActiveEntities.clear();
 		
 		// Add any entities to the main entity list
-		for(DynamicEntity add : m_AddEntities) {
+		for(Entity add : m_AddEntities) {
 			m_Entities.add(add);
 		}
 		m_AddEntities.clear();
 		
 		// Activate only entities on the screen
-		for(DynamicEntity ent : m_Entities) {
+		for(Entity ent : m_Entities) {
 			boolean activate = false;
 			// Player always active
 			// TODO: Maybe something smarter?
 			activate = (ent == GameScreen.getLevel().getPlayer());
-			activate |= (ent.isOnScreen());
+			activate |= (ent.isOnScreen(0.25f));
 			
 			if(activate)
 				m_ActiveEntities.add(ent);
 		}
 		
 		// Update active entities
-		for(DynamicEntity ent : m_ActiveEntities) {
+		for(Entity ent : m_ActiveEntities) {
 			ent.update(deltaTime);
 		}
+		
 		// Handle entity collisions
 		m_EntityCollider.update();
 		
+		// Mark entities for deletion
+		for(Entity ent : m_ActiveEntities) {
+			if(ent.isDead()) {
+				if(ent != GameScreen.getLevel().getPlayer()) {
+					m_RemoveEntities.add(ent);
+				}
+			}
+		}
+		
 		// Remove any entities from the main entity list
-		for(DynamicEntity dead : m_RemoveEntities) {
+		for(Entity dead : m_RemoveEntities) {
 			m_Entities.remove(dead);
 		}
 		m_RemoveEntities.clear();		
 	}
 	
 	public void draw(SpriteBatch batch) {
-		for(DynamicEntity ent : m_ActiveEntities) {
+		for(Entity ent : m_ActiveEntities) {
 			ent.draw(batch);
 		}
 	}
 	
 	public void draw(ShapeRenderer render) {
-		for(DynamicEntity ent : m_ActiveEntities) {
+		for(Entity ent : m_ActiveEntities) {
 			ent.draw(render);
 		}
 		
@@ -76,18 +87,15 @@ public class EntityManager {
 	
 	/** Adds an entity to the entity manager. 
 	 * @param The entity to add
-	 * @param Is this entity friendly? (TODO: better way)
 	 * @param Should be force this entity to be added right away? */
-	public void addEntity(DynamicEntity ent, boolean friendly, boolean force) {
-		ent.setFriendly(friendly);
-		if(force) {
+	public void addEntity(Entity ent, boolean force) {
+		if(force)
 			m_Entities.add(ent);
-		}
 		else
 			m_AddEntities.add(ent);
 	}
 	
-	public void removeEntity(DynamicEntity ent) {
+	public void removeEntity(Entity ent) {
 		m_RemoveEntities.add(ent);
 	}
 	
@@ -104,15 +112,15 @@ public class EntityManager {
 		return m_Entities.size();
 	}
 	
-	public ArrayList<DynamicEntity> getActiveEntities() {
+	public ArrayList<Entity> getActiveEntities() {
 		return m_ActiveEntities;
 	}
 	
-	//public LinkedList<DynamicEntity> getEntities() {
-	//	return m_Entities;
-	//}
-	
-	public Player getPlayer() {
-		return (Player) m_Entities.get(0);
+	public Entity getPlayer() {
+		return m_Entities.get(0);
+	}
+
+	public EntityCollider getEntityCollider() {
+		return m_EntityCollider;
 	}
 }

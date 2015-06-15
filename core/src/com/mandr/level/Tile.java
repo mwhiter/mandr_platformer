@@ -6,6 +6,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.mandr.game.screens.GameScreen;
 import com.mandr.util.AABB;
 import com.mandr.util.Directions;
 
@@ -172,6 +173,42 @@ public class Tile {
 		if(aboveTile == null) return true;
 		
 		return aboveTile.getTileType() != TileType.TILE_LADDER;
+	}
+	
+	public boolean shouldCollide(AABB box, boolean x_axis) {
+		switch(getTileType()) {
+		// Solid tiles collide always, unless the player is near the tops of slopes, in which case the solid tile next to the slope entrance does not collide
+		case TILE_SOLID: {
+			// This is only an x_axis check
+			if(x_axis) {
+				int y = box.getBottomYIndex();
+				for(int x = box.getLeftXIndex(); x <= box.getRightX(); x++) {
+					Tile slopeTile = GameScreen.getLevel().getTile(x, y);
+					if(slopeTile == null) continue;
+					
+					if(slopeTile.getTileType() != TileType.TILE_SLOPE) continue;
+					if(slopeTile.getY() != getY()) continue;
+					
+					// If we're going right, compare right side, otherwise compare left. If the slopes are 16 (i.e. they are the "top" of a tile, then don't collide)
+					if((slopeTile.getSlopeDirection() == Directions.DIRECTION_RIGHT ? slopeTile.getSlopeRight() : slopeTile.getSlopeLeft()) == 16) {
+						return false;
+					}
+				}
+			}
+			
+			return true;
+		}
+		// One-way tiles only collide if the y position is greater than the tile's y
+		case TILE_ONE_WAY:
+		case TILE_ONE_WAY_STRICT:
+			if(x_axis) return false;
+			else return box.min.y >= (getY()+1);
+		case TILE_LADDER:
+			if(x_axis) return false;
+			if(!isLadderTop()) return false;
+			else return box.min.y >= (getY()+1);
+		default: return false;
+		}
 	}
 	
 	@Override

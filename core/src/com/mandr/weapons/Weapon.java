@@ -3,12 +3,17 @@ package com.mandr.weapons;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.mandr.entity.Actor;
-import com.mandr.entity.Projectile;
+import com.mandr.entity.Entity;
+import com.mandr.entity.EntityStats;
+import com.mandr.entity.component.ComponentType;
+import com.mandr.entity.component.MoveComponent;
+import com.mandr.entity.component.RenderComponent;
+import com.mandr.entity.component.WeaponComponent;
 import com.mandr.game.GameGlobals;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.util.AABB;
 import com.mandr.util.Constants;
+import com.mandr.util.StringUtils;
 
 public class Weapon {
 	public enum WeaponType {
@@ -17,15 +22,18 @@ public class Weapon {
 		WEAPON_TYPE_FULL_AUTO
 	}
 	
-	private Actor m_Actor;
+	private Entity m_Entity;
 	
 	private WeaponStats m_WeaponStats;
 	
 	private int m_CurrentMagSize;		// current number of rounds in the magazine
 	private int m_CurrentAmmoReserve;	// current number of ammo in reserves
 	
-	private float m_ReloadStartTime;
-	private float m_LastFireTime;
+	private long m_ReloadStartTime;
+	private long m_LastFireTime;
+	
+	private Vector2 m_ProjectileSpawnPosition;
+	private Vector2 m_ProjectileVelocity;
 	
 	/** Constructs a new weapon.
 	 * @param (float) reloadSpeed: Reload speed in seconds.
@@ -34,8 +42,8 @@ public class Weapon {
 	 * @param: (int) maxAmmo: Maximum ammo of the weapon.
 	 * @param: (int) magSize: Maximum size of the magazine.
 	 * */
-	public Weapon(Actor actor, WeaponStats stats) {
-		m_Actor = actor;
+	public Weapon(Entity entity, WeaponStats stats) {
+		m_Entity = entity;
 		m_WeaponStats = stats;
 		
 		m_ReloadStartTime = -1;
@@ -43,15 +51,40 @@ public class Weapon {
 		
 		m_CurrentMagSize = m_WeaponStats.getMagSize();
 		m_CurrentAmmoReserve = m_WeaponStats.getMaxAmmo() - m_CurrentMagSize;
+		
+		m_ProjectileSpawnPosition = new Vector2();
+		m_ProjectileVelocity = new Vector2();
 	}
 	
 	public void update() {
+		updateSpawner();
+		
 		if(isReloading()) {
 			if(getReloadPercent() >= 1.0f) {
 				finishReload();
 			}
 		}
 	}
+	
+	/** Updates the spawn of the projectile based on the entity's look vector. */
+	private void updateSpawner() {
+		AABB entityBox = m_Entity.getEndBoundingBox();
+		
+		Vector2 lookVector = m_Entity.getLookVector();
+		
+		// (u*v/u*u) * u
+		float scalar = (Vector2.dot(lookVector.x, lookVector.y, lookVector.x * (m_Entity.getSize().x /2), lookVector.y * (m_Entity.getSize().y / 2)) / lookVector.dot(lookVector));
+		Vector2 position = new Vector2(entityBox.getCenterX() + lookVector.x * scalar, entityBox.getCenterY() + lookVector.y * scalar);
+		
+		float bulletVelocity = m_WeaponStats.getBulletVelocity();
+		Vector2 velocity = new Vector2(lookVector.x * bulletVelocity, lookVector.y * bulletVelocity);
+		
+		m_ProjectileSpawnPosition = position;
+		m_ProjectileVelocity = velocity;
+	}
+	
+	public Vector2 getProjectileSpawnPosition() { return m_ProjectileSpawnPosition; }
+	public Vector2 getProjectileVelocity() { return m_ProjectileVelocity; }
 	
 	//=========================================================================
 	// Fire
@@ -76,50 +109,9 @@ public class Weapon {
 		
 		// TODO: Burst fire support
 	}
-	
-	// TODO: Test function to spawn projectile. Figure out a better way to implement
-	private void spawnProjectile() {
-		
-		AABB box = m_Actor.getBoundingBox();
-		
-		Vector2 lookVector = m_Actor.getLookVector();
-		Vector2 projectileSpawn = new Vector2(lookVector.x * (m_Actor.getSize().x/2), lookVector.y * (m_Actor.getSize().y/2));
-		
-		// (u*v / u*u) * u
-		float scalar = (lookVector.dot(projectileSpawn) / lookVector.dot(lookVector));
-		projectileSpawn = new Vector2(lookVector.x * scalar, lookVector.y * scalar);
-		projectileSpawn.add(box.getCenterX(), box.getCenterY());
-		
-		float width = 0.25f;
-		float height = 0.125f;
-		Vector2 projVelocity = new Vector2(lookVector);
-		projVelocity.scl(m_WeaponStats.getBulletVelocity());
-		
-		Projectile proj = new Projectile(this,  new Texture("resources/entities/test_bullet.png"), projectileSpawn.x, projectileSpawn.y, width, height);
-		
-		float timeSinceFire = timeSinceLastFire();
-		float cofPercent = 1 - ((timeSinceFire - m_WeaponStats.getFireSpeed()) / Constants.COF_MAX_TIME);
-		cofPercent = MathUtils.clamp(cofPercent, 0, 1);
-		float cof = m_WeaponStats.getConeOfFire() * cofPercent;
-		
-		if(m_Actor.isCrouched())
-			cof /= 2;
-		
-		// Apply some cone of fire
-		float rotation = MathUtils.random(-cof, cof);
-		projVelocity.rotate(rotation);
-		
-		proj.getVelocity().x = projVelocity.x;
-		proj.getVelocity().y = projVelocity.y;
-		proj.getSprite().setOrigin(proj.getSprite().getWidth()/2, proj.getSprite().getHeight()/2);
-		proj.getSprite().setRotation(projVelocity.angle());
-		
-		// TODO: Something better?
-		GameScreen.getLevel().getEntityManager().addEntity(proj, m_Actor.isFriendly(), false);
-	}
-	
+
 	public boolean canFire() {
-		if(!m_Actor.canFireWeapon())
+		if(!((WeaponComponent) m_Entity.getComponent(ComponentType.COMPONENT_WEAPON)).canFireWeapon())
 			return false;
 		
 		if(isReloading())
@@ -128,11 +120,50 @@ public class Weapon {
 		if(isOutOfAmmo())
 			return false;
 		
+		
 		// Too soon since we fired
 		if(timeSinceLastFire() < m_WeaponStats.getFireSpeed())
 			return false;
 		
 		return true;
+	}
+	
+	// TODO: Test function to spawn projectile. Figure out a better way to implement
+	private void spawnProjectile() {
+		// TODO: This should be based on the projectile stats (i.e. if we wanted to fire plasma, the size would be larger.
+		float sizeX = 0.125f;
+		float sizeY = 0.125f;
+		
+		EntityStats projStats = new EntityStats();
+		projStats.dieOffScreen = true;
+		projStats.ignoresScreenBounds = true;
+		projStats.dieWhenCollide = true;
+		Entity projectile = new Entity(m_ProjectileSpawnPosition.x, m_ProjectileSpawnPosition.y, sizeX, sizeY, new Texture("resources/entities/test_bullet.png"), ComponentType.COMPONENT_BULLET.getFlag(), projStats);
+		MoveComponent move = (MoveComponent) projectile.getComponent(ComponentType.COMPONENT_MOVE);
+		if(move == null) {
+			StringUtils.debugPrint("ERROR: Move component null for projectile!");
+			return;
+		}
+		
+		// Apply some random cone of fire.
+		Vector2 velocity = m_ProjectileVelocity;
+		float cof = m_WeaponStats.getConeOfFire();
+		// percentage of cof from crouching. Maybe weapon based?
+		cof = m_Entity.isCrouched() ? cof * Constants.COF_CROUCH_PERCENT : cof;
+		float rotation = MathUtils.random(-cof, cof);
+		velocity.rotate(rotation);
+		
+		move.getVelocity().set(velocity);
+
+		// Graphical stuff. Adjust sprite based on variables.
+		RenderComponent render = (RenderComponent) projectile.getComponent(ComponentType.COMPONENT_RENDER);
+		if(render != null) {
+			render.getSprite().setOrigin(render.getSprite().getWidth()/2, render.getSprite().getHeight()/2);
+			render.getSprite().setRotation(velocity.angle());
+		}
+		
+		// Spawn the entity.
+		GameScreen.getLevel().getEntityManager().addEntity(projectile, false);
 	}
 	
 	//=========================================================================
@@ -174,6 +205,7 @@ public class Weapon {
 	private void finishReload() {
 		if(!isReloading())
 			return;
+		
 		stopReload();
 		
 		
@@ -197,7 +229,7 @@ public class Weapon {
 	}
 	
 	public boolean canReload() {
-		if(!m_Actor.canReload())
+		if(!m_Entity.isGrounded())
 			return false;
 		if(m_CurrentMagSize == m_WeaponStats.getMagSize())
 			return false;
@@ -213,7 +245,7 @@ public class Weapon {
 	
 	/** Are we currently reloading? */
 	public boolean isReloading() {
-		return m_ReloadStartTime >= 0.0f;
+		return m_ReloadStartTime >= 0;
 	}
 	
 	/** What percent of the reload have we completed? 
@@ -223,10 +255,10 @@ public class Weapon {
 		if(!isReloading())
 			return 0;
 		
-		float currentTime = GameGlobals.getGameTime();
-		float reloadTime = currentTime - m_ReloadStartTime;
+		long reloadTime = GameGlobals.getGameTime() - m_ReloadStartTime;
+		float percent = (float) reloadTime / m_WeaponStats.getReloadSpeed();
 		
-		return Math.min(1, reloadTime / m_WeaponStats.getReloadSpeed());
+		return Math.min(1, percent);
 	}
 	
 	public WeaponStats getWeaponStats() { return m_WeaponStats; }
@@ -237,13 +269,12 @@ public class Weapon {
 	// Helper Methods
 	//=========================================================================
 	
-	public Actor getOwner() { 
-		return m_Actor;
+	public Entity getOwner() { 
+		return m_Entity;
 	}
 	
-	private float timeSinceLastFire() {
-		float currentTime = GameGlobals.getGameTime();
-		return currentTime - m_LastFireTime;
+	private long timeSinceLastFire() {
+		return GameGlobals.getGameTime() - m_LastFireTime;
 	}
 	
 	public String getWeaponString() {

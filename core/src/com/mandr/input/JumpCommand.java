@@ -1,8 +1,10 @@
 package com.mandr.input;
 
-import com.mandr.entity.Actor;
-import com.mandr.entity.Player;
-import com.mandr.util.Directions;
+//import com.mandr.entity.component.ActorStates;
+import com.mandr.entity.Entity;
+import com.mandr.entity.component.ComponentType;
+import com.mandr.entity.component.JumpComponent;
+import com.mandr.entity.component.MoveComponent;
 
 public class JumpCommand extends Command {
 	
@@ -11,26 +13,18 @@ public class JumpCommand extends Command {
 	}
 	
 	@Override
-	public void execute(InputTrigger keyTrigger, Actor actor) {
+	public void execute(InputTrigger keyTrigger, Entity entity) {
+		MoveComponent move = (MoveComponent) entity.getComponent(ComponentType.COMPONENT_MOVE);
+		if(move == null) return;
+		JumpComponent jump = (JumpComponent) entity.getComponent(ComponentType.COMPONENT_JUMP);
+		if(jump == null) return;
+		
 		switch(keyTrigger) {
 		case INPUT_JUST_PRESSED:
-			if(actor.isOnLadder()) {
-				actor.detachLadder();
-				if(actor.getMoveDirectionX() == Directions.NO_DIRECTION) {
-					return;
-				}
-			}
-			
-			// The player will have special rules for jumping
-			if(actor instanceof Player) {
-				((Player) actor).playerJump();
-			}
+			jump.jump();
 			break;
 		case INPUT_JUST_RELEASED:
-			// The player can release a jump to jump a shorter height
-			if(actor instanceof Player) {
-				((Player) actor).releaseJump();
-			}
+			jump.release();
 			break;
 			
 		// Does nothing

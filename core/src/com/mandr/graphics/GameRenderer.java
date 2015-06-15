@@ -9,7 +9,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
-import com.mandr.entity.Actor;
+import com.mandr.entity.Entity;
 import com.mandr.game.MyGame;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.graphics.ui.GameHUD;
@@ -27,7 +27,7 @@ public class GameRenderer {
 	private OrthogonalTiledMapRenderer m_MapRenderer;
 
 	// The actor in which the game renders around
-	private Actor m_TrackedActor;
+	private Entity m_TrackedEntity;
 	
 	private GameHUD m_HUD;
 	
@@ -38,7 +38,7 @@ public class GameRenderer {
 		m_ShapeRenderer = new ShapeRenderer();
 		m_Camera = new OrthographicCamera(Constants.NUM_TILES_ON_GAME_SCREEN_WIDTH,Constants.NUM_TILES_ON_GAME_SCREEN_HEIGHT);
 		
-		m_TrackedActor = GameScreen.getLevel().getPlayer();
+		m_TrackedEntity = GameScreen.getLevel().getPlayer();
 		
 		m_HUD = new GameHUD();
 		
@@ -87,7 +87,7 @@ public class GameRenderer {
 			m_ShapeRenderer.begin(ShapeType.Line);
 				m_ShapeRenderer.setProjectionMatrix(m_Camera.combined);
 				m_HUD.drawLookLine(m_ShapeRenderer);
-				//GameScreen.getLevel().getEntityManager().draw(m_ShapeRenderer);
+				GameScreen.getLevel().getEntityManager().draw(m_ShapeRenderer);
 			m_ShapeRenderer.end();
 		}
 	}
@@ -113,8 +113,8 @@ public class GameRenderer {
 	private void updateCamera() {
 		Level level = GameScreen.getLevel();
 		
-		float centerX = m_TrackedActor.getPosition().x + m_TrackedActor.getSize().x/2;
-		float centerY = m_TrackedActor.getPosition().y + m_TrackedActor.getSize().y/2;
+		float centerX = m_TrackedEntity.getEndPosition().x + m_TrackedEntity.getSize().x/2;
+		float centerY = m_TrackedEntity.getEndPosition().y + m_TrackedEntity.getSize().y/2;
 		
 		float minX = level.getLevelBoundaryX() + (Constants.NUM_TILES_ON_GAME_SCREEN_WIDTH / 2);
 		float minY = level.getLevelBoundaryY() + (Constants.NUM_TILES_ON_GAME_SCREEN_HEIGHT / 2);
@@ -133,12 +133,12 @@ public class GameRenderer {
 		m_MapRenderer.render();
 	}
 	
-	public Actor getTrackedEntity() {
-		return m_TrackedActor;
+	public Entity getTrackedEntity() {
+		return m_TrackedEntity;
 	}
 	
-	public void setTrackedEntity(Actor actor) {
-		m_TrackedActor = actor;
+	public void setTrackedEntity(Entity actor) {
+		m_TrackedEntity = actor;
 	}
 	
 	public SpriteBatch getSpriteBatch() {

@@ -1,6 +1,7 @@
 package com.mandr.game.screens;
 
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.mandr.game.GameGlobals;
 import com.mandr.game.MyGame;
 import com.mandr.graphics.GameRenderer;
@@ -17,6 +18,9 @@ public class GameScreen implements Screen {
 	private static GameRenderer m_Renderer;
 	private static Level m_Level;
 	private GameState m_GameState;
+
+	static private long previous = TimeUtils.millis();
+	static private long lag = 0;
 	
 	// Input handler is the input listener
 	private InputHandler input;
@@ -56,21 +60,27 @@ public class GameScreen implements Screen {
 	}
 	
 	@Override
-	public void render(float delta) {
-		if(m_GameState == GameState.GAME_PAUSED)
-			delta = 0;
+	public void render(float delta) {	
+		long current = TimeUtils.millis();
+		long elapsed = current - previous;
+		previous = current;
+		lag += elapsed;
 		
-		GameGlobals.changeGameTime(delta);
 		
 		input.update();
 		
-		// On update when running
-		if(m_GameState == GameState.GAME_RUNNING) {
-			m_Level.update(delta);
+		// TODO: input lag
+		while(lag >= 33) {
+			GameGlobals.changeGameTime(elapsed);
+			m_Level.update(1f);
+			lag -= elapsed;
 		}
 		
 		// Always render
 		m_Renderer.draw(delta);
+		
+		//if(m_GameState == GameState.GAME_PAUSED)
+		//	delta = 0;		
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
-import com.mandr.entity.Player;
+import com.mandr.entity.Entity;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.util.Directions;
 
@@ -92,10 +92,12 @@ public class InputHandler {
 		for(Integer keycode : m_RegisteredMouseButtons) {
 			handleButtonInput(keycode);
 		}
+		
+		GameScreen.getLevel().getPlayer().updateLook(Gdx.input.getX(), Gdx.input.getY());
 	}
 	
 	private void handleKeyInput(int keycode) {
-		Player entity = GameScreen.getLevel().getPlayer();
+		Entity entity = GameScreen.getLevel().getPlayer();
 		Command command = m_Keys[keycode];
 		
 		if(entity == null || command == null) return;
@@ -111,7 +113,7 @@ public class InputHandler {
 	}
 	
 	private void handleButtonInput(int button) {
-		Player entity = GameScreen.getLevel().getPlayer();
+		Entity entity = GameScreen.getLevel().getPlayer();
 		Command command = m_Buttons[button];
 		
 		if(entity == null || command == null) return;

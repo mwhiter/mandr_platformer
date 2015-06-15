@@ -1,6 +1,6 @@
 package com.mandr.input;
 
-import com.mandr.entity.Actor;
+import com.mandr.entity.Entity;
 
 public class PauseCommand extends Command {
 
@@ -10,7 +10,7 @@ public class PauseCommand extends Command {
 	}
 
 	@Override
-	public void execute(InputTrigger keyType, Actor actor) {
+	public void execute(InputTrigger keyType, Entity entity) {
 		if(keyType == InputTrigger.INPUT_JUST_PRESSED) {
 			if(input.getGameScreen().isPaused()) {
 				input.getGameScreen().resume();

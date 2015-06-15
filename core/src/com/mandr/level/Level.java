@@ -9,10 +9,11 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.math.Vector2;
-import com.mandr.entity.Enemy;
+import com.mandr.entity.Entity;
 import com.mandr.entity.EntityManager;
-import com.mandr.entity.Player;
-import com.mandr.entity.ai.AITypes;
+import com.mandr.entity.EntityStats;
+import com.mandr.entity.component.ComponentType;
+import com.mandr.game.GameGlobals;
 import com.mandr.util.Constants;
 
 public class Level {
@@ -90,8 +91,8 @@ public class Level {
 	private void initEntities() {
 		System.out.println("Initializing entities");
 		
-		// TODO: test way of doing things
-		ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+		//// TODO: test way of doing things
+		//ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 		
 		MapLayer objectLayer = getObjectLayer();
 		MapObjects objects = objectLayer.getObjects();
@@ -103,9 +104,9 @@ public class Level {
 			if(type.equalsIgnoreCase("StartPosition")) {
 				m_StartPositions.add(new Vector2((Float)object.getProperties().get("x") / 16.0f, (Float)object.getProperties().get("y") / 16.0f));
 			}
-			else if(type.equalsIgnoreCase("Enemy_00")) {
-				enemies.add(new Enemy(AITypes.AI_TYPE_WALKING, new Texture("resources/entities/test_enemy_img.png"), (Float)object.getProperties().get("x") / 16.0f, (Float)object.getProperties().get("y") / 16.0f, 1, 1));
-			}
+			//else if(type.equalsIgnoreCase("Enemy_00")) {
+			//	enemies.add(new Enemy(AITypes.AI_TYPE_WALKING, new Texture("resources/entities/test_enemy_img.png"), (Float)object.getProperties().get("x") / 16.0f, (Float)object.getProperties().get("y") / 16.0f, 1, 1));
+			//}
 		}
 		
 		// If no player starts were initialized, spawn the player at 3,1
@@ -116,14 +117,29 @@ public class Level {
 		m_ActiveStartPosition = m_StartPositions.get(0);
 		
 		// Create the player at a start position
-		Player player = new Player(new Texture("resources/entities/test_player_spritesheet.png"), m_ActiveStartPosition.x, m_ActiveStartPosition.y, 1, 2);
+		//Player player = new Player(new Texture("resources/entities/test_player_spritesheet.png"), m_ActiveStartPosition.x, m_ActiveStartPosition.y, 1, 2);
 		
-		m_EntityManager.addEntity(player, true, true);
+		EntityStats playerStats = new EntityStats();
+		playerStats.maxHealth = 100;
+		playerStats.moveSpeed = 0.125f;
+		playerStats.crouchSpeed = 0.0625f;
+		playerStats.climbSpeed = 0.125f;
+		playerStats.jumpSpeed = 0.4f;
+		playerStats.friendly = true;
+		Entity player = new Entity(m_ActiveStartPosition.x, m_ActiveStartPosition.y, 1, 2, new Texture("resources/entities/test_player_img.png"), ComponentType.COMPONENT_PLAYER.getFlag(), playerStats);
+		m_EntityManager.addEntity(player, true);
+
+		// TODO: adding all weapons. But in theory they should be picked up by items
+		player.addWeapon(GameGlobals.getWeaponStats()[2]);
+		player.addWeapon(GameGlobals.getWeaponStats()[0]);
+		player.addWeapon(GameGlobals.getWeaponStats()[1]);
 		
-		for(Enemy enemy : enemies) {
-			enemy.getAI().setSpeedLevel(0);
-			m_EntityManager.addEntity(enemy, false, false);
-		}
+		//m_EntityManager.addEntity(player, true, true);
+		
+		//for(Enemy enemy : enemies) {
+		//	enemy.getAI().setSpeedLevel(0);
+			//m_EntityManager.addEntity(enemy, false, false);
+		//}
 	}
 	
 	private void initGrid() {
@@ -167,8 +183,16 @@ public class Level {
 		return m_TileGrid[x + y * getWidth()];
 	}
 	
-	public Player getPlayer() { 
-		return (Player) m_EntityManager.getPlayer();
+	public Tile getTileByType(int x, int y, TileType type) { 
+		if(x < 0 || x >= getWidth()) return null;
+		if(y < 0 || y >= getHeight()) return null;
+		int index = x + y * getWidth();
+		if(m_TileGrid[index].getTileType() != type) return null;
+		return m_TileGrid[index];
+	}
+	
+	public Entity getPlayer() { 
+		return m_EntityManager.getPlayer();
 	}
 	
 	//=========================================================================

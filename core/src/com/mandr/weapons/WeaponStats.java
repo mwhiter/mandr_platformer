@@ -4,15 +4,15 @@ import com.mandr.weapons.Weapon.WeaponType;
 
 
 public class WeaponStats {
-	private final float fireSpeed;
+	private final int ms_per_round;		// millisec per round
 	
 	private final String name;
 	private final WeaponType type;
-	private final float reloadSpeed;	// Reload speed in seconds
-	private final int rpm;					// Rate of fire in rounds per minute
-	private final int bulletVelocity;		// Speed of bullets (in tiles per second)
-	private final int cof;					// In degrees
-	private final int damage;				// Damage of each bullet
+	private final int reloadSpeed;		// Reload speed in ms
+	private final int rpm;				// Rate of fire in rounds per minute
+	private final float bulletVelocity;	// Speed of bullets (in tiles per second)
+	private final int cof;				// In degrees
+	private final int damage;			// Damage of each bullet
 	private final int max_ammo;			// Maximum ammunition
 	private final int mag_size;			// Size of the magazine
 	
@@ -27,7 +27,7 @@ public class WeaponStats {
 	 * @param (int) bullet_velocity: Velocity of each bullet in tiles per second
 	 * @param (int) bullet_damage: Damage of each bullet
 	 * */
-	public WeaponStats(String weaponName, WeaponType weaponType, float reload_speed, int maxammo, int magsize, int rate_of_fire, int cone_of_fire, int bullet_velocity, int bullet_damage) {
+	public WeaponStats(String weaponName, WeaponType weaponType, int reload_speed, int maxammo, int magsize, int rate_of_fire, int cone_of_fire, float bullet_velocity, int bullet_damage) {
 		name = weaponName;
 		type = weaponType;
 		reloadSpeed = reload_speed;
@@ -42,8 +42,7 @@ public class WeaponStats {
 		cof = cone_of_fire;
 		bulletVelocity = bullet_velocity;
 		damage = bullet_damage;
-		
-		fireSpeed = 60.0f / (float)Math.max(1, rpm);
+		ms_per_round = 60000 / rpm;	// 60000 is MS_PER_MIN
 	}
 	
 	public String getName() {
@@ -54,7 +53,7 @@ public class WeaponStats {
 		return type;
 	}
 	
-	public float getReloadSpeed() {
+	public int getReloadSpeed() {
 		return reloadSpeed;
 	}
 	
@@ -74,7 +73,7 @@ public class WeaponStats {
 		return cof;
 	}
 	
-	public int getBulletVelocity() {
+	public float getBulletVelocity() {
 		return bulletVelocity;
 	}
 	
@@ -82,7 +81,7 @@ public class WeaponStats {
 		return damage;
 	}
 	
-	public float getFireSpeed() {
-		return fireSpeed;
+	public int getFireSpeed() {
+		return ms_per_round;
 	}
 }
