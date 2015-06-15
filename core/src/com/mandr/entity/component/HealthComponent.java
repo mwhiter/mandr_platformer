@@ -1,7 +1,7 @@
 package com.mandr.entity.component;
 
-import com.mandr.entity.EntityState;
 import com.mandr.entity.Entity;
+import com.mandr.enums.EntityState;
 
 public class HealthComponent extends Component {
 	private final int m_MaxHealth;

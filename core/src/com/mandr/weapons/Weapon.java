@@ -1,6 +1,5 @@
 package com.mandr.weapons;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.mandr.entity.Entity;
@@ -138,7 +137,7 @@ public class Weapon {
 		projStats.dieOffScreen = true;
 		projStats.ignoresScreenBounds = true;
 		projStats.dieWhenCollide = true;
-		Entity projectile = new Entity(m_ProjectileSpawnPosition.x, m_ProjectileSpawnPosition.y, sizeX, sizeY, new Texture("resources/entities/test_bullet.png"), ComponentType.COMPONENT_BULLET.getFlag(), projStats);
+		Entity projectile = new Entity(m_ProjectileSpawnPosition.x, m_ProjectileSpawnPosition.y, sizeX, sizeY, GameGlobals.getTexture(2), ComponentType.COMPONENT_BULLET.getFlag(), projStats);
 		MoveComponent move = (MoveComponent) projectile.getComponent(ComponentType.COMPONENT_MOVE);
 		if(move == null) {
 			StringUtils.debugPrint("ERROR: Move component null for projectile!");

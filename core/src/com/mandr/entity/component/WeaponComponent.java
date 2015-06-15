@@ -2,8 +2,8 @@ package com.mandr.entity.component;
 
 import java.util.LinkedList;
 
-import com.mandr.entity.EntityState;
 import com.mandr.entity.Entity;
+import com.mandr.enums.EntityState;
 import com.mandr.util.Constants;
 import com.mandr.weapons.Weapon;
 import com.mandr.weapons.WeaponStats;

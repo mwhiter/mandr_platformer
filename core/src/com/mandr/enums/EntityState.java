@@ -1,4 +1,4 @@
-package com.mandr.entity;
+package com.mandr.enums;
 
 // Unique states an entity can be in
 public enum EntityState {

@@ -1,4 +1,4 @@
-package com.mandr.entity;
+package com.mandr.level.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.LinkedList;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.mandr.entity.Entity;
+import com.mandr.entity.EntityStats;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.level.Tile;
 import com.mandr.physics.Quadtree;

@@ -1,11 +1,11 @@
 package com.mandr.entity.component;
 
 import com.badlogic.gdx.math.Vector2;
-import com.mandr.entity.EntityState;
 import com.mandr.entity.Entity;
+import com.mandr.enums.EntityState;
+import com.mandr.enums.TileType;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.level.Tile;
-import com.mandr.level.TileType;
 import com.mandr.util.AABB;
 import com.mandr.util.Constants;
 import com.mandr.util.Directions;

@@ -5,6 +5,7 @@ import com.mandr.entity.component.ComponentType;
 import com.mandr.entity.component.CrouchComponent;
 import com.mandr.entity.component.LadderComponent;
 import com.mandr.entity.component.MoveComponent;
+import com.mandr.enums.InputTrigger;
 import com.mandr.util.Directions;
 
 public class DirectionCommand extends Command {

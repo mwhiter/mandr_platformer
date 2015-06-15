@@ -2,7 +2,6 @@ package com.mandr.level;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -10,10 +9,11 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.math.Vector2;
 import com.mandr.entity.Entity;
-import com.mandr.entity.EntityManager;
 import com.mandr.entity.EntityStats;
 import com.mandr.entity.component.ComponentType;
+import com.mandr.enums.TileType;
 import com.mandr.game.GameGlobals;
+import com.mandr.level.entity.EntityManager;
 import com.mandr.util.Constants;
 
 public class Level {
@@ -116,23 +116,23 @@ public class Level {
 		}
 		m_ActiveStartPosition = m_StartPositions.get(0);
 		
-		// Create the player at a start position
-		//Player player = new Player(new Texture("resources/entities/test_player_spritesheet.png"), m_ActiveStartPosition.x, m_ActiveStartPosition.y, 1, 2);
+		// TODO: need to read this stuff in from a file or DB or something
+		EntityStats playerStats 	= new EntityStats();
+		playerStats.maxHealth 		= 100;
+		playerStats.moveSpeed 		= 0.125f;
+		playerStats.maxFallSpeed 	= -1f;
+		playerStats.crouchSpeed 	= 0.0625f;
+		playerStats.climbSpeed 		= 0.125f;
+		playerStats.jumpSpeed 		= 0.4f;
+		playerStats.friendly 		= true;
 		
-		EntityStats playerStats = new EntityStats();
-		playerStats.maxHealth = 100;
-		playerStats.moveSpeed = 0.125f;
-		playerStats.crouchSpeed = 0.0625f;
-		playerStats.climbSpeed = 0.125f;
-		playerStats.jumpSpeed = 0.4f;
-		playerStats.friendly = true;
-		Entity player = new Entity(m_ActiveStartPosition.x, m_ActiveStartPosition.y, 1, 2, new Texture("resources/entities/test_player_img.png"), ComponentType.COMPONENT_PLAYER.getFlag(), playerStats);
+		Entity player = new Entity(m_ActiveStartPosition.x, m_ActiveStartPosition.y, 1, 2, GameGlobals.getTexture(0), ComponentType.COMPONENT_PLAYER.getFlag(), playerStats);
 		m_EntityManager.addEntity(player, true);
 
 		// TODO: adding all weapons. But in theory they should be picked up by items
-		player.addWeapon(GameGlobals.getWeaponStats()[2]);
-		player.addWeapon(GameGlobals.getWeaponStats()[0]);
-		player.addWeapon(GameGlobals.getWeaponStats()[1]);
+		player.addWeapon(GameGlobals.getWeaponStats(2));
+		player.addWeapon(GameGlobals.getWeaponStats(0));
+		player.addWeapon(GameGlobals.getWeaponStats(1));
 		
 		//m_EntityManager.addEntity(player, true, true);
 		

@@ -3,6 +3,7 @@ package com.mandr.input;
 import com.mandr.entity.Entity;
 import com.mandr.entity.component.ComponentType;
 import com.mandr.entity.component.WeaponComponent;
+import com.mandr.enums.InputTrigger;
 import com.mandr.weapons.Weapon;
 import com.mandr.weapons.Weapon.WeaponType;
 

@@ -1,6 +1,7 @@
 package com.mandr.input;
 
 import com.mandr.entity.Entity;
+import com.mandr.enums.InputTrigger;
 
 public abstract class Command {
 	protected InputHandler input;

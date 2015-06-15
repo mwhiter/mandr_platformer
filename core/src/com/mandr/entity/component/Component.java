@@ -1,7 +1,7 @@
 package com.mandr.entity.component;
 
-import com.mandr.entity.EntityState;
 import com.mandr.entity.Entity;
+import com.mandr.enums.EntityState;
 
 public abstract class Component {
 	public static final int MAX_NUM_COMPONENTS = 32;

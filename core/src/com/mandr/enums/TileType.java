@@ -1,4 +1,4 @@
-package com.mandr.level;
+package com.mandr.enums;
 
 public enum TileType {
 	TILE_EMPTY,

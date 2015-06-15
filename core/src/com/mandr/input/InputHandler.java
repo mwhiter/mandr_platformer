@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.mandr.entity.Entity;
+import com.mandr.enums.InputTrigger;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.util.Directions;
 

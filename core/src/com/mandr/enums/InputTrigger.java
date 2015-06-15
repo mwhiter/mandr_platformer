@@ -1,4 +1,4 @@
-package com.mandr.input;
+package com.mandr.enums;
 
 public enum InputTrigger {
 	INPUT_JUST_PRESSED,

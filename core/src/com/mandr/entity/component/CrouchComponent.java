@@ -1,7 +1,7 @@
 package com.mandr.entity.component;
 
-import com.mandr.entity.EntityState;
 import com.mandr.entity.Entity;
+import com.mandr.enums.EntityState;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.level.Tile;
 import com.mandr.util.AABB;

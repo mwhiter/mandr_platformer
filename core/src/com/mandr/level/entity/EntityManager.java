@@ -1,10 +1,11 @@
-package com.mandr.entity;
+package com.mandr.level.entity;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.mandr.entity.Entity;
 //import com.mandr.entity.unused.DynamicEntity;
 //import com.mandr.entity.unused.Player;
 import com.mandr.game.screens.GameScreen;

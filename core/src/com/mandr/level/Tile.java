@@ -6,6 +6,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.mandr.enums.TileType;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.util.AABB;
 import com.mandr.util.Directions;

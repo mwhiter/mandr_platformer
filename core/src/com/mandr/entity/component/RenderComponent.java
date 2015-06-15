@@ -6,9 +6,8 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.mandr.entity.EntityState;
-import com.mandr.entity.Drawable;
 import com.mandr.entity.Entity;
+import com.mandr.enums.EntityState;
 import com.mandr.util.Constants;
 
 public class RenderComponent extends Component implements Drawable {
@@ -27,8 +26,7 @@ public class RenderComponent extends Component implements Drawable {
 
 	@Override
 	public void stateChange(EntityState oldState, EntityState newState) {
-		// TODO Auto-generated method stub
-		
+		// TODO: I have decided to use some sort of file to store starting IDs and animation numbers for various entity states
 	}
 
 	@Override

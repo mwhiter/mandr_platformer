@@ -1,4 +1,4 @@
-package com.mandr.entity;
+package com.mandr.entity.component;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 

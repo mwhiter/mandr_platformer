@@ -5,6 +5,7 @@ import com.mandr.entity.Entity;
 import com.mandr.entity.component.ComponentType;
 import com.mandr.entity.component.JumpComponent;
 import com.mandr.entity.component.MoveComponent;
+import com.mandr.enums.InputTrigger;
 
 public class JumpCommand extends Command {
 	
