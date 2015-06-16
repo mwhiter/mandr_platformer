@@ -75,6 +75,8 @@ public class Entity {
 		}
 		if(hasComponent(ComponentType.COMPONENT_WEAPON)) m_Components.put(ComponentType.COMPONENT_WEAPON, new WeaponComponent(this));
 		if(hasComponent(ComponentType.COMPONENT_HEALTH)) m_Components.put(ComponentType.COMPONENT_HEALTH, new HealthComponent(this, stats.maxHealth));
+		if(hasComponent(ComponentType.COMPONENT_PROJECTILE)) m_Components.put(ComponentType.COMPONENT_PROJECTILE, new ProjectileComponent(this));
+		if(hasComponent(ComponentType.COMPONENT_ITEM)) m_Components.put(ComponentType.COMPONENT_ITEM, new ItemComponent(this, stats.itemStats));
 	}
 	
 	/** Update the entity */
@@ -346,5 +348,31 @@ public class Entity {
 	
 	public static boolean collide(Entity a, Entity b) {
 		return AABB.collide(a.getEndBoundingBox(), b.getEndBoundingBox());
+	}
+
+	public void notifyCollide(Tile tile) {
+		// Notify all components of collision
+		Iterator<HashMap.Entry<ComponentType, Component>> it = m_Components.entrySet().iterator();
+		while(it.hasNext()) {
+			HashMap.Entry<ComponentType, Component> pair = (HashMap.Entry<ComponentType, Component>) it.next();
+			ComponentType componentType = pair.getKey();
+			if(hasComponent(componentType)) {
+				Component component = (Component) pair.getValue();
+				component.collision(tile);
+			}
+		}
+	}
+
+	public void notifyCollide(Entity ent) {
+		// Notify all components of collision
+		Iterator<HashMap.Entry<ComponentType, Component>> it = m_Components.entrySet().iterator();
+		while(it.hasNext()) {
+			HashMap.Entry<ComponentType, Component> pair = (HashMap.Entry<ComponentType, Component>) it.next();
+			ComponentType componentType = pair.getKey();
+			if(hasComponent(componentType)) {
+				Component component = (Component) pair.getValue();
+				component.collision(ent);
+			}
+		}
 	}
 }

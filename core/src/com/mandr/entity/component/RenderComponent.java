@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.mandr.entity.Entity;
 import com.mandr.enums.EntityState;
+import com.mandr.level.Tile;
 import com.mandr.util.Constants;
 
 public class RenderComponent extends Component implements Drawable {
@@ -29,6 +30,12 @@ public class RenderComponent extends Component implements Drawable {
 		// TODO: I have decided to use some sort of file to store starting IDs and animation numbers for various entity states
 	}
 
+	@Override
+	public void collision(Entity other) {}
+
+	@Override
+	public void collision(Tile tile) {}
+	
 	@Override
 	public ComponentType getType() {
 		return ComponentType.COMPONENT_RENDER;

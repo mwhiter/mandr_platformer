@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.mandr.entity.Entity;
-import com.mandr.entity.EntityStats;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.level.Tile;
 import com.mandr.physics.Quadtree;
@@ -95,7 +94,7 @@ public class EntityCollider {
 		while(tileIterator.hasNext()) {
 			HashMap.Entry<Entity, LinkedList<Tile>> pair = (HashMap.Entry<Entity, LinkedList<Tile>>) tileIterator.next();
 			for(Tile tile : pair.getValue()) {
-				collideTile(pair.getKey(), tile);
+				pair.getKey().notifyCollide(tile);
 			}
 		}
 		
@@ -103,25 +102,10 @@ public class EntityCollider {
 		while(entIterator.hasNext()) {
 			HashMap.Entry<Entity, LinkedList<Entity>> pair = (HashMap.Entry<Entity, LinkedList<Entity>>) entIterator.next();
 			for(Entity ent : pair.getValue()) {
-				collideEntity(pair.getKey(), ent);
+				pair.getKey().notifyCollide(ent);
+				ent.notifyCollide(pair.getKey());
 			}
 		}
-	}
-	
-	// TODO: maybe these functions belong elsewhere?
-	private void collideEntity(Entity primary, Entity other) {
-		EntityStats primaryStats = primary.getStats();
-		EntityStats otherStats = other.getStats();
-		if(primaryStats.dieWhenCollide) primary.setDead(true);
-		if(otherStats.dieWhenCollide) 	other.setDead(true);
-	}
-
-	// TODO: maybe these functions belong elsewhere?
-	private void collideTile(Entity primary, Tile tile) {
-		EntityStats primaryStats = primary.getStats();
-		
-		// TODO: Weird ricochet bug when colliding at an angle.
-		if(primaryStats.dieWhenCollide) primary.setDead(true);
 	}
 	
 	public void addCollision(Entity primary, Tile tile) {

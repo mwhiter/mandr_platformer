@@ -27,14 +27,20 @@ public class InputHandler {
 	
 	private GameScreen m_GameScreen;
 	
-	public DirectionCommand COMMAND_LEFT = new DirectionCommand(this, Directions.DIRECTION_LEFT);
-	public DirectionCommand COMMAND_RIGHT = new DirectionCommand(this, Directions.DIRECTION_RIGHT);
-	public DirectionCommand COMMAND_UP = new DirectionCommand(this, Directions.DIRECTION_UP);
-	public DirectionCommand COMMAND_DOWN = new DirectionCommand(this, Directions.DIRECTION_DOWN);
-	public JumpCommand COMMAND_JUMP = new JumpCommand(this);
-	public ReloadCommand COMMAND_RELOAD = new ReloadCommand(this);
-	public PauseCommand COMMAND_PAUSE = new PauseCommand(this);
-	public FireWeaponCommand COMMAND_FIRE_WEAPON = new FireWeaponCommand(this);
+	private DirectionCommand COMMAND_LEFT = new DirectionCommand(this, Directions.DIRECTION_LEFT);
+	private DirectionCommand COMMAND_RIGHT = new DirectionCommand(this, Directions.DIRECTION_RIGHT);
+	private DirectionCommand COMMAND_UP = new DirectionCommand(this, Directions.DIRECTION_UP);
+	private DirectionCommand COMMAND_DOWN = new DirectionCommand(this, Directions.DIRECTION_DOWN);
+	private JumpCommand COMMAND_JUMP = new JumpCommand(this);
+	private ReloadCommand COMMAND_RELOAD = new ReloadCommand(this);
+	private PauseCommand COMMAND_PAUSE = new PauseCommand(this);
+	private FireWeaponCommand COMMAND_FIRE_WEAPON = new FireWeaponCommand(this);
+	private SwitchWeaponCommand COMMAND_WEAPON_0 = new SwitchWeaponCommand(this, 0);
+	private SwitchWeaponCommand COMMAND_WEAPON_1 = new SwitchWeaponCommand(this, 1);
+	private SwitchWeaponCommand COMMAND_WEAPON_2 = new SwitchWeaponCommand(this, 2);
+	private SwitchWeaponCommand COMMAND_WEAPON_3 = new SwitchWeaponCommand(this, 3);
+	private SwitchWeaponCommand COMMAND_WEAPON_4 = new SwitchWeaponCommand(this, 4);
+	private SwitchWeaponCommand COMMAND_WEAPON_5 = new SwitchWeaponCommand(this, 5);
 	
 	public InputHandler(GameScreen gameScreen) {	
 		
@@ -141,6 +147,13 @@ public class InputHandler {
 		registerKeycode(COMMAND_JUMP, 	Keys.SPACE);
 		registerKeycode(COMMAND_PAUSE, 	Keys.P);
 		registerKeycode(COMMAND_RELOAD, Keys.R);
+		
+		registerKeycode(COMMAND_WEAPON_0, Keys.NUM_1);
+		registerKeycode(COMMAND_WEAPON_1, Keys.NUM_2);
+		registerKeycode(COMMAND_WEAPON_2, Keys.NUM_3);
+		registerKeycode(COMMAND_WEAPON_3, Keys.NUM_4);
+		registerKeycode(COMMAND_WEAPON_4, Keys.NUM_5);
+		registerKeycode(COMMAND_WEAPON_5, Keys.NUM_6);
 
 		registerMouseButton(COMMAND_FIRE_WEAPON, Buttons.LEFT);
 		registerMouseButton(null, Buttons.RIGHT);

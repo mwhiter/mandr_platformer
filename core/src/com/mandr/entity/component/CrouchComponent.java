@@ -105,4 +105,10 @@ public class CrouchComponent extends Component {
 	public float getCrouchSpeed() {
 		return m_CrouchSpeed;
 	}
+
+	@Override
+	public void collision(Entity other) {}
+
+	@Override
+	public void collision(Tile tile) {}
 }

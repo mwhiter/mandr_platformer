@@ -1,6 +1,7 @@
 package com.mandr.game;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.mandr.entity.ItemStats;
 import com.mandr.weapons.Weapon;
 import com.mandr.weapons.WeaponStats;
 
@@ -44,5 +45,19 @@ public class GameGlobals {
 	public static WeaponStats getWeaponStats(int statsID) {
 		if(statsID < 0 || statsID >= m_WeaponStats.length) throw new ArrayIndexOutOfBoundsException("Weapon Stat ID does not exist!");
 		return m_WeaponStats[statsID];
+	}
+
+	// TODO Read from database or something.
+	static private ItemStats[] m_ItemStats = {
+		new ItemStats(0, 0),
+		new ItemStats(1, 0),
+		new ItemStats(2, 0),
+		new ItemStats(3, 0),
+		new ItemStats(-1, 15)
+	};
+	
+	public static ItemStats getItemStats(int statsID) {
+		if(statsID < 0 || statsID >= m_ItemStats.length) throw new ArrayIndexOutOfBoundsException("Item Stat ID does not exist!");
+		return m_ItemStats[statsID];
 	}
 }

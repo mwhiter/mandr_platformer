@@ -86,6 +86,12 @@ public class MoveComponent extends Component {
 		return ComponentType.COMPONENT_MOVE;
 	}
 
+	@Override
+	public void collision(Entity other) {}
+
+	@Override
+	public void collision(Tile tile) {}
+
 	//=========================================================================
 	// Movement - X direction
 	//=========================================================================

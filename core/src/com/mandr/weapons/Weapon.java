@@ -42,6 +42,8 @@ public class Weapon {
 	 * @param: (int) magSize: Maximum size of the magazine.
 	 * */
 	public Weapon(Entity entity, WeaponStats stats) {
+		if(stats == null) throw new IllegalArgumentException("Stats cannot be null!");
+		
 		m_Entity = entity;
 		m_WeaponStats = stats;
 		
@@ -134,9 +136,9 @@ public class Weapon {
 		float sizeY = 0.125f;
 		
 		EntityStats projStats = new EntityStats();
+		projStats.friendly = m_Entity.isFriendly();
 		projStats.dieOffScreen = true;
 		projStats.ignoresScreenBounds = true;
-		projStats.dieWhenCollide = true;
 		Entity projectile = new Entity(m_ProjectileSpawnPosition.x, m_ProjectileSpawnPosition.y, sizeX, sizeY, GameGlobals.getTexture(2), ComponentType.COMPONENT_BULLET.getFlag(), projStats);
 		MoveComponent move = (MoveComponent) projectile.getComponent(ComponentType.COMPONENT_MOVE);
 		if(move == null) {
@@ -168,6 +170,15 @@ public class Weapon {
 	//=========================================================================
 	// Ammo and Magazine Size
 	//=========================================================================
+	
+	public int getTotalAmmo() {
+		if(isInfiniteAmmo()) return m_CurrentMagSize;
+		return m_CurrentAmmoReserve + m_WeaponStats.getMagSize();
+	}
+	
+	public boolean isAmmoFull() {
+		return getTotalAmmo() >= m_WeaponStats.getMaxAmmo();
+	}
 	
 	public boolean isMagazineEmpty() {
 		return m_CurrentMagSize == 0;
@@ -264,6 +275,15 @@ public class Weapon {
 	public int getCurrentMagSize() { return m_CurrentMagSize; }
 	public int getCurrentAmmoReserve() { return m_CurrentAmmoReserve; }
 	
+	public void giveAmmo(int ammo) {
+		// Can't give ammo because we're full
+		if(isAmmoFull()) return;
+		int ammoToGive = Math.min(ammo, m_WeaponStats.getMaxAmmo() - getTotalAmmo());
+	
+		// Don't give negative ammo ever.
+		m_CurrentAmmoReserve += Math.max(ammoToGive, 0);
+	}
+	
 	//=========================================================================
 	// Helper Methods
 	//=========================================================================
@@ -282,5 +302,10 @@ public class Weapon {
 			ammoReserveString = " / " + Integer.toString(getCurrentAmmoReserve());		
 		
 		return new String(m_WeaponStats.getName() + ": " + Integer.toString(getCurrentMagSize()) + ammoReserveString);
+	}
+	
+	@Override
+	public String toString() {
+		return new String(m_WeaponStats.getName());
 	}
 }

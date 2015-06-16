@@ -91,9 +91,6 @@ public class Level {
 	private void initEntities() {
 		System.out.println("Initializing entities");
 		
-		//// TODO: test way of doing things
-		//ArrayList<Enemy> enemies = new ArrayList<Enemy>();
-		
 		MapLayer objectLayer = getObjectLayer();
 		MapObjects objects = objectLayer.getObjects();
 		MapObject object;
@@ -104,9 +101,6 @@ public class Level {
 			if(type.equalsIgnoreCase("StartPosition")) {
 				m_StartPositions.add(new Vector2((Float)object.getProperties().get("x") / 16.0f, (Float)object.getProperties().get("y") / 16.0f));
 			}
-			//else if(type.equalsIgnoreCase("Enemy_00")) {
-			//	enemies.add(new Enemy(AITypes.AI_TYPE_WALKING, new Texture("resources/entities/test_enemy_img.png"), (Float)object.getProperties().get("x") / 16.0f, (Float)object.getProperties().get("y") / 16.0f, 1, 1));
-			//}
 		}
 		
 		// If no player starts were initialized, spawn the player at 3,1
@@ -128,18 +122,30 @@ public class Level {
 		
 		Entity player = new Entity(m_ActiveStartPosition.x, m_ActiveStartPosition.y, 1, 2, GameGlobals.getTexture(0), ComponentType.COMPONENT_PLAYER.getFlag(), playerStats);
 		m_EntityManager.addEntity(player, true);
-
-		// TODO: adding all weapons. But in theory they should be picked up by items
-		player.addWeapon(GameGlobals.getWeaponStats(2));
-		player.addWeapon(GameGlobals.getWeaponStats(0));
-		player.addWeapon(GameGlobals.getWeaponStats(1));
 		
-		//m_EntityManager.addEntity(player, true, true);
+		// TODO All this is test bullshit.
 		
-		//for(Enemy enemy : enemies) {
-		//	enemy.getAI().setSpeedLevel(0);
-			//m_EntityManager.addEntity(enemy, false, false);
-		//}
+		EntityStats itemStats = new EntityStats();
+		itemStats.friendly = true;
+		itemStats.itemStats = GameGlobals.getItemStats(0);
+		int itemComponents = ComponentType.COMPONENT_RENDER.getFlag() | ComponentType.COMPONENT_MOVE.getFlag() | ComponentType.COMPONENT_ITEM.getFlag();
+		
+		Entity item = new Entity(13, 1, 1, 1,GameGlobals.getTexture(3), itemComponents, itemStats);
+		m_EntityManager.addEntity(item, false);
+		
+		EntityStats itemStats2 = new EntityStats();
+		itemStats2.friendly = true;
+		itemStats2.itemStats = GameGlobals.getItemStats(1);
+		
+		EntityStats itemStats3 = new EntityStats();
+		itemStats3.friendly = true;
+		itemStats3.itemStats = GameGlobals.getItemStats(2);
+		
+		item = new Entity(15, 5, 1,1, GameGlobals.getTexture(3), itemComponents, itemStats2);
+		m_EntityManager.addEntity(item, false);
+		
+		item = new Entity(17, 5, 1,1, GameGlobals.getTexture(3), itemComponents, itemStats3);
+		m_EntityManager.addEntity(item, false);
 	}
 	
 	private void initGrid() {

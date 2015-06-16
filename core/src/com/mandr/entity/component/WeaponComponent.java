@@ -4,7 +4,9 @@ import java.util.LinkedList;
 
 import com.mandr.entity.Entity;
 import com.mandr.enums.EntityState;
+import com.mandr.level.Tile;
 import com.mandr.util.Constants;
+import com.mandr.util.StringUtils;
 import com.mandr.weapons.Weapon;
 import com.mandr.weapons.WeaponStats;
 
@@ -37,6 +39,12 @@ public class WeaponComponent extends Component {
 	}
 
 	@Override
+	public void collision(Entity other) {}
+
+	@Override
+	public void collision(Tile tile) {}
+	
+	@Override
 	public ComponentType getType() {
 		// TODO Auto-generated method stub
 		return null;
@@ -47,6 +55,10 @@ public class WeaponComponent extends Component {
 	 * */
 	public void setActiveWeapon(int index) {
 		if(index < 0 || index >= m_Weapons.size()) return;
+		if(index == m_ActiveWeaponIndex) return;
+		
+		StringUtils.debugPrint("Switching active weapon. TODO: add event.");
+		
 		m_ActiveWeaponIndex = index;
 	}
 	
@@ -82,12 +94,26 @@ public class WeaponComponent extends Component {
 	}
 	
 	public void addWeapon(WeaponStats stats) {
+		if(stats == null) return;
+		
+		// If a weapon like this already exists, just give it some ammo instead
+		for(Weapon weap : m_Weapons) {
+			if(weap.getWeaponStats() == stats) {
+				StringUtils.debugPrint("Found duplicate weapon. Giving ammo instead.");
+				weap.giveAmmo(weap.getWeaponStats().getMagSize());
+			}
+		}
+		
+		// Unique weapon, trying to add weapon now...
+		// Don't add weapon if we are full
 		if(m_Weapons.size() == Constants.MAX_WEAPONS)
 			return;
 		
 		// TODO: Change weapons to use new entities
 		Weapon newWeapon = new Weapon(m_Entity, stats);
 		m_Weapons.add(newWeapon);
+		
+		StringUtils.debugPrint("Picked up " + newWeapon + " (TODO: Add weapon pickup event!)");
 		
 		// If we didn't have an active weapon and we just added a weapon, set this new weapon as the active weapon
 		if(getActiveWeapon() == null) {

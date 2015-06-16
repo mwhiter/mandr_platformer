@@ -10,5 +10,9 @@ public class EntityStats {
 	public boolean 	friendly 			= false;	// Is the entity friendly?
 	public boolean	ignoresScreenBounds = false;	// Does the entity ignore screen bounds?
 	public boolean	dieOffScreen 		= false;	// Does the entity die when it goes offscreen?
-	public boolean	dieWhenCollide 		= false;	// Does the entity die when it collides with anything?
+	
+	public ItemStats itemStats			= null;		// Item stats
+	
+	// Projectile only thing, so why should every entity know?
+	//public boolean	dieWhenCollide 		= false;	// Does the entity die when it collides with anything?
 }

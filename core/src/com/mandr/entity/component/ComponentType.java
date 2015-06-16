@@ -8,7 +8,8 @@ public enum ComponentType {
 	COMPONENT_LADDER(1 << 4),		// Allows entity to climb ladders (if he can move)
 	COMPONENT_WEAPON(1 << 5),		// Allows entity to equip weapons and shoot
 	COMPONENT_HEALTH(1 << 6),		// Allows entity to equip weapons and shoot
-	COMPONENT_PROJECTILE(1 << 7),	// Allows entity to behavior like a projectile.
+	COMPONENT_PROJECTILE(1 << 7),	// Allows entity to behave like a projectile.
+	COMPONENT_ITEM(1 << 8),			// Allows entity to behave like an item
 	
 	// Component Presets
 	COMPONENT_PLAYER(

@@ -150,4 +150,10 @@ public class JumpComponent extends Component {
 	public void setFallBegun() {
 		m_FallStartedTime = GameGlobals.getGameTime();
 	}
+
+	@Override
+	public void collision(Entity other) {}
+
+	@Override
+	public void collision(Tile tile) {}
 }

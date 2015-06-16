@@ -225,4 +225,10 @@ public class LadderComponent extends Component {
 		
 		m_LadderTile = null;
 	}
+
+	@Override
+	public void collision(Entity other) {}
+
+	@Override
+	public void collision(Tile tile) {}
 }

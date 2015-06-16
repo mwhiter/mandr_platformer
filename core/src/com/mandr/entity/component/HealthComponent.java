@@ -2,6 +2,7 @@ package com.mandr.entity.component;
 
 import com.mandr.entity.Entity;
 import com.mandr.enums.EntityState;
+import com.mandr.level.Tile;
 
 public class HealthComponent extends Component {
 	private final int m_MaxHealth;
@@ -53,4 +54,9 @@ public class HealthComponent extends Component {
 		return true;
 	}
 
+	@Override
+	public void collision(Entity other) {}
+
+	@Override
+	public void collision(Tile tile) {}
 }
