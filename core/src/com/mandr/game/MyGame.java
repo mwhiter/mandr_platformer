@@ -4,12 +4,15 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.mandr.game.screens.LoadingScreen;
+import com.mandr.database.DatabaseUtility;
 
 public class MyGame extends Game  {
 	static private boolean debug = true;
 	
 	@Override
 	public void create() {
+		new DatabaseUtility().initDatabase();
+		
 		// TODO: still highly incomplete, need to think of a good screen access system
 		setScreen(new LoadingScreen(this, "test_map.tmx"));
 	}

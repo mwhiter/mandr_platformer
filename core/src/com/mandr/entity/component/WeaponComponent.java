@@ -4,11 +4,11 @@ import java.util.LinkedList;
 
 import com.mandr.entity.Entity;
 import com.mandr.enums.EntityState;
+import com.mandr.info.WeaponInfo;
 import com.mandr.level.Tile;
 import com.mandr.util.Constants;
 import com.mandr.util.StringUtils;
 import com.mandr.weapons.Weapon;
-import com.mandr.weapons.WeaponStats;
 
 public class WeaponComponent extends Component {
 
@@ -93,7 +93,7 @@ public class WeaponComponent extends Component {
 		return true;
 	}
 	
-	public void addWeapon(WeaponStats stats) {
+	public void addWeapon(WeaponInfo stats) {
 		if(stats == null) return;
 		
 		// If a weapon like this already exists, just give it some ammo instead

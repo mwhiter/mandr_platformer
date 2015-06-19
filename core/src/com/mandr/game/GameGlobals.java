@@ -1,9 +1,10 @@
 package com.mandr.game;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.graphics.Texture;
-import com.mandr.entity.ItemStats;
-import com.mandr.weapons.Weapon;
-import com.mandr.weapons.WeaponStats;
+import com.mandr.info.ItemInfo;
+import com.mandr.info.WeaponInfo;
 
 public class GameGlobals {
 	static private long m_GameTime = 0;
@@ -34,30 +35,18 @@ public class GameGlobals {
 		return m_Textures[texID];
 	}
 
-	// TODO Read from database or something.
-	static private WeaponStats[] m_WeaponStats = { 
-		new WeaponStats("Pistol", 	Weapon.WeaponType.WEAPON_TYPE_SEMI_AUTO, 1200, 0, 10, 400, 3, 2, 15),		// Test Pistol
-		new WeaponStats("Sniper", 	Weapon.WeaponType.WEAPON_TYPE_SEMI_AUTO, 2000, 40, 5, 45, 1, 6, 75),		// Test Sniper
-		new WeaponStats("LMG", 		Weapon.WeaponType.WEAPON_TYPE_FULL_AUTO, 6800, 300, 100, 600, 5, 3, 35),	// Test LMG
-		new WeaponStats("SMG", 		Weapon.WeaponType.WEAPON_TYPE_FULL_AUTO, 3000, 1000, 30, 900, 3, 2, 25)		// Test SMG
-	};
-	
-	public static WeaponStats getWeaponStats(int statsID) {
-		if(statsID < 0 || statsID >= m_WeaponStats.length) throw new ArrayIndexOutOfBoundsException("Weapon Stat ID does not exist!");
-		return m_WeaponStats[statsID];
+	private static ArrayList<WeaponInfo> m_WeaponStats = new ArrayList<WeaponInfo>();
+	public static ArrayList<WeaponInfo> getWeaponStats() { return m_WeaponStats; }
+	public static WeaponInfo getWeaponStat(int id) {
+		if(id < 0 || id >= m_WeaponStats.size()) return null;
+		return m_WeaponStats.get(id);
 	}
 
 	// TODO Read from database or something.
-	static private ItemStats[] m_ItemStats = {
-		new ItemStats(0, 0),
-		new ItemStats(1, 0),
-		new ItemStats(2, 0),
-		new ItemStats(3, 0),
-		new ItemStats(-1, 15)
-	};
-	
-	public static ItemStats getItemStats(int statsID) {
-		if(statsID < 0 || statsID >= m_ItemStats.length) throw new ArrayIndexOutOfBoundsException("Item Stat ID does not exist!");
-		return m_ItemStats[statsID];
+	private static ArrayList<ItemInfo> m_ItemStats = new ArrayList<ItemInfo>();
+	public static ArrayList<ItemInfo> getItemInfos() { return m_ItemStats; }
+	public static ItemInfo getItemInfo(int id) {
+		if(id < 0 || id >= m_ItemStats.size()) return null;
+		return m_ItemStats.get(id);
 	}
 }

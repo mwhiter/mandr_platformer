@@ -127,7 +127,7 @@ public class Level {
 		
 		EntityStats itemStats = new EntityStats();
 		itemStats.friendly = true;
-		itemStats.itemStats = GameGlobals.getItemStats(0);
+		itemStats.itemStats = GameGlobals.getItemInfo(0);
 		int itemComponents = ComponentType.COMPONENT_RENDER.getFlag() | ComponentType.COMPONENT_MOVE.getFlag() | ComponentType.COMPONENT_ITEM.getFlag();
 		
 		Entity item = new Entity(13, 1, 1, 1,GameGlobals.getTexture(3), itemComponents, itemStats);
@@ -135,11 +135,11 @@ public class Level {
 		
 		EntityStats itemStats2 = new EntityStats();
 		itemStats2.friendly = true;
-		itemStats2.itemStats = GameGlobals.getItemStats(1);
+		itemStats2.itemStats = GameGlobals.getItemInfo(1);
 		
 		EntityStats itemStats3 = new EntityStats();
 		itemStats3.friendly = true;
-		itemStats3.itemStats = GameGlobals.getItemStats(2);
+		itemStats3.itemStats = GameGlobals.getItemInfo(2);
 		
 		item = new Entity(15, 5, 1,1, GameGlobals.getTexture(3), itemComponents, itemStats2);
 		m_EntityManager.addEntity(item, false);

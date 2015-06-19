@@ -10,6 +10,7 @@ import com.mandr.entity.component.RenderComponent;
 import com.mandr.entity.component.WeaponComponent;
 import com.mandr.game.GameGlobals;
 import com.mandr.game.screens.GameScreen;
+import com.mandr.info.WeaponInfo;
 import com.mandr.util.AABB;
 import com.mandr.util.Constants;
 import com.mandr.util.StringUtils;
@@ -23,7 +24,7 @@ public class Weapon {
 	
 	private Entity m_Entity;
 	
-	private WeaponStats m_WeaponStats;
+	private WeaponInfo m_WeaponStats;
 	
 	private int m_CurrentMagSize;		// current number of rounds in the magazine
 	private int m_CurrentAmmoReserve;	// current number of ammo in reserves
@@ -41,7 +42,7 @@ public class Weapon {
 	 * @param: (int) maxAmmo: Maximum ammo of the weapon.
 	 * @param: (int) magSize: Maximum size of the magazine.
 	 * */
-	public Weapon(Entity entity, WeaponStats stats) {
+	public Weapon(Entity entity, WeaponInfo stats) {
 		if(stats == null) throw new IllegalArgumentException("Stats cannot be null!");
 		
 		m_Entity = entity;
@@ -271,7 +272,7 @@ public class Weapon {
 		return Math.min(1, percent);
 	}
 	
-	public WeaponStats getWeaponStats() { return m_WeaponStats; }
+	public WeaponInfo getWeaponStats() { return m_WeaponStats; }
 	public int getCurrentMagSize() { return m_CurrentMagSize; }
 	public int getCurrentAmmoReserve() { return m_CurrentAmmoReserve; }
 	

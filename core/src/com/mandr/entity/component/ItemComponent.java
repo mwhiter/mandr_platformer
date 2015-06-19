@@ -1,16 +1,16 @@
 package com.mandr.entity.component;
 
 import com.mandr.entity.Entity;
-import com.mandr.entity.ItemStats;
 import com.mandr.enums.EntityState;
 import com.mandr.game.GameGlobals;
+import com.mandr.info.ItemInfo;
 import com.mandr.level.Tile;
 import com.mandr.util.StringUtils;
 
 public class ItemComponent extends Component {
-	ItemStats m_Stats;
+	ItemInfo m_Stats;
 	
-	public ItemComponent(Entity entity, ItemStats stats) {
+	public ItemComponent(Entity entity, ItemInfo stats) {
 		super(entity);
 		m_Stats = stats;
 	}
@@ -40,7 +40,7 @@ public class ItemComponent extends Component {
 		StringUtils.debugPrint("Picked up item!");
 		
 		if(m_Stats.getWeaponID() != -1) {
-			other.addWeapon(GameGlobals.getWeaponStats(m_Stats.getWeaponID()));
+			other.addWeapon(GameGlobals.getWeaponStat(m_Stats.getWeaponID()));
 		}
 		if(m_Stats.getHealth() != 0) {
 			HealthComponent health = (HealthComponent) other.getComponent(ComponentType.COMPONENT_HEALTH);

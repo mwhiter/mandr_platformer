@@ -12,12 +12,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.mandr.entity.component.*;
 import com.mandr.enums.EntityState;
 import com.mandr.game.screens.GameScreen;
+import com.mandr.info.WeaponInfo;
 import com.mandr.level.Tile;
 import com.mandr.util.AABB;
 import com.mandr.util.Constants;
 import com.mandr.util.Directions;
 import com.mandr.util.StringUtils;
-import com.mandr.weapons.WeaponStats;
 
 /** An entity with components. */
 public class Entity {	
@@ -301,7 +301,7 @@ public class Entity {
 	// Helper methods
 	//=========================================================================
 	
-	public void addWeapon(WeaponStats stats) {
+	public void addWeapon(WeaponInfo stats) {
 		if(!hasComponent(ComponentType.COMPONENT_WEAPON)) return;
 		((WeaponComponent)getComponent(ComponentType.COMPONENT_WEAPON)).addWeapon(stats);
 	}

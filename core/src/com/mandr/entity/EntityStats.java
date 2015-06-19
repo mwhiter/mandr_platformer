@@ -1,5 +1,7 @@
 package com.mandr.entity;
 
+import com.mandr.info.ItemInfo;
+
 public class EntityStats {
 	public int 		maxHealth 			= 0;		// Max health of the entity
 	public float 	moveSpeed 			= 0;		// Movement speed of entity
@@ -11,7 +13,7 @@ public class EntityStats {
 	public boolean	ignoresScreenBounds = false;	// Does the entity ignore screen bounds?
 	public boolean	dieOffScreen 		= false;	// Does the entity die when it goes offscreen?
 	
-	public ItemStats itemStats			= null;		// Item stats
+	public ItemInfo itemStats			= null;		// Item stats
 	
 	// Projectile only thing, so why should every entity know?
 	//public boolean	dieWhenCollide 		= false;	// Does the entity die when it collides with anything?
