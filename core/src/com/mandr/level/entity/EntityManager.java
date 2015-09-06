@@ -62,6 +62,10 @@ public class EntityManager {
 				if(ent != GameScreen.getLevel().getPlayer()) {
 					m_RemoveEntities.add(ent);
 				}
+				else {
+					// TODO: Player death event
+					GameScreen.getLevel().respawn();
+				}
 			}
 		}
 		

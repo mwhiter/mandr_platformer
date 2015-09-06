@@ -9,6 +9,7 @@ import com.mandr.level.Tile;
 import com.mandr.util.AABB;
 import com.mandr.util.Constants;
 import com.mandr.util.Directions;
+import com.mandr.util.StringUtils;
 
 // TODO: way too many to-dos here. Fix them?
 public class MoveComponent extends Component {
@@ -31,6 +32,14 @@ public class MoveComponent extends Component {
 		m_CeilingTile = null;
 	}
 
+	@Override
+	public void reset() {
+		m_Velocity.set(0,0);
+		m_GroundTile = null;
+		m_GroundTile = null;
+		m_CeilingTile = null;
+	}
+	
 	@Override
 	public void update(float deltaTime) {
 		boolean groundedBefore = isGrounded();
@@ -58,7 +67,7 @@ public class MoveComponent extends Component {
 				JumpComponent jump = (JumpComponent) m_Entity.getComponent(ComponentType.COMPONENT_JUMP);
 				if(jump != null) jump.setFallBegun();
 				
-				System.out.println("Fall started!");
+				//System.out.println("Fall started!");
 			}
 		}
 	}
@@ -77,6 +86,10 @@ public class MoveComponent extends Component {
 	public void stateChange(EntityState oldState, EntityState newState) {
 		// Entering or leaving a ladder: reset velocity
 		if(oldState == EntityState.ENTITY_STATE_LADDER || newState == EntityState.ENTITY_STATE_LADDER) {
+			m_Velocity.set(0, 0);
+		}
+		
+		if(newState == EntityState.ENTITY_STATE_WALL_ATTACH) {
 			m_Velocity.set(0, 0);
 		}
 	}
@@ -216,6 +229,8 @@ public class MoveComponent extends Component {
 		float speed = m_Velocity.y;
 		speed = applyGravity(speed);
 		speed = slopeDescend(speed);
+		if(speed < m_Entity.getStats().getMaxFallSpeed())
+			speed = m_Entity.getStats().getMaxFallSpeed();
 		return speed;
 	}
 	
@@ -230,7 +245,7 @@ public class MoveComponent extends Component {
 		
 		// This code will smoothly descend us down the slope.
 		float slope_factor = Math.abs(m_Velocity.x * slope);
-		System.out.println(slope_factor);
+		StringUtils.debugPrint(Float.toString(slope_factor));
 		speed = Math.min(speed, -slope_factor);
 		
 		return speed;
@@ -248,6 +263,10 @@ public class MoveComponent extends Component {
 	public boolean isAffectedByGravity() {
 		if(isGrounded())
 		 	return false;
+		
+		// TODO: Nope...doesn't seem like correct behavior.
+		if(m_Entity.isAttachedToWall())
+			return false;
 		
 		if(m_Entity.isOnLadder())
 			return false;
@@ -443,6 +462,10 @@ public class MoveComponent extends Component {
 		m_Velocity.y += velocity;
 	}
 
+	public void setVelocityX(float velocity) {
+		m_Velocity.x = velocity;
+	}
+	
 	public void setVelocityY(float velocity) {
 		m_Velocity.y = velocity;
 	}

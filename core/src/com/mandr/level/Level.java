@@ -8,11 +8,10 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.math.Vector2;
+import com.mandr.database.DatabaseUtility;
 import com.mandr.entity.Entity;
-import com.mandr.entity.EntityStats;
-import com.mandr.entity.component.ComponentType;
 import com.mandr.enums.TileType;
-import com.mandr.game.GameGlobals;
+import com.mandr.game.Globals;
 import com.mandr.level.entity.EntityManager;
 import com.mandr.util.Constants;
 
@@ -33,7 +32,7 @@ public class Level {
 	
 	// TODO: Might want to do this in a separate class?
 	private ArrayList<Vector2> m_StartPositions;
-	Vector2 m_ActiveStartPosition;
+	private Checkpoint m_Checkpoint;
 	
 	public Level() {
 		m_isLoaded = false;
@@ -49,7 +48,7 @@ public class Level {
 	//=========================================================================
 	// Initialization
 	//=========================================================================
-	
+	// TODO: Redo the map loading code at some point to something nicer. This is all placeholder junk.
 	public void loadMap(String fileName) {
 		m_TiledMap = new TmxMapLoader().load("maps\\" + fileName);
 		m_ForegroundLayer = m_TiledMap.getLayers().get("foreground");
@@ -108,44 +107,15 @@ public class Level {
 			m_StartPositions.add(new Vector2(3,1));
 			System.out.println("WARNING! No player starts initialized! Spawning player at 3,1");
 		}
-		m_ActiveStartPosition = m_StartPositions.get(0);
 		
-		// TODO: need to read this stuff in from a file or DB or something
-		EntityStats playerStats 	= new EntityStats();
-		playerStats.maxHealth 		= 100;
-		playerStats.moveSpeed 		= 0.125f;
-		playerStats.maxFallSpeed 	= -1f;
-		playerStats.crouchSpeed 	= 0.0625f;
-		playerStats.climbSpeed 		= 0.125f;
-		playerStats.jumpSpeed 		= 0.4f;
-		playerStats.friendly 		= true;
-		
-		Entity player = new Entity(m_ActiveStartPosition.x, m_ActiveStartPosition.y, 1, 2, GameGlobals.getTexture(0), ComponentType.COMPONENT_PLAYER.getFlag(), playerStats);
+		// The player needs to exists otherwise the game crashes.
+		Entity player = new Entity(m_StartPositions.get(0).x, m_StartPositions.get(0).y, Globals.getTexture(0), Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_PLAYER", "Entities")));
 		m_EntityManager.addEntity(player, true);
 		
-		// TODO All this is test bullshit.
+		// add a test item
+		//m_EntityManager.addEntity(new Entity(31, 2, Globals.getTexture(3), Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_WEAPON_SMG", "Entities"))), true);
 		
-		EntityStats itemStats = new EntityStats();
-		itemStats.friendly = true;
-		itemStats.itemStats = GameGlobals.getItemInfo(0);
-		int itemComponents = ComponentType.COMPONENT_RENDER.getFlag() | ComponentType.COMPONENT_MOVE.getFlag() | ComponentType.COMPONENT_ITEM.getFlag();
-		
-		Entity item = new Entity(13, 1, 1, 1,GameGlobals.getTexture(3), itemComponents, itemStats);
-		m_EntityManager.addEntity(item, false);
-		
-		EntityStats itemStats2 = new EntityStats();
-		itemStats2.friendly = true;
-		itemStats2.itemStats = GameGlobals.getItemInfo(1);
-		
-		EntityStats itemStats3 = new EntityStats();
-		itemStats3.friendly = true;
-		itemStats3.itemStats = GameGlobals.getItemInfo(2);
-		
-		item = new Entity(15, 5, 1,1, GameGlobals.getTexture(3), itemComponents, itemStats2);
-		m_EntityManager.addEntity(item, false);
-		
-		item = new Entity(17, 5, 1,1, GameGlobals.getTexture(3), itemComponents, itemStats3);
-		m_EntityManager.addEntity(item, false);
+		saveCheckpoint();
 	}
 	
 	private void initGrid() {
@@ -204,18 +174,22 @@ public class Level {
 	//=========================================================================
 	// Start Positions
 	//=========================================================================
+	public void saveCheckpoint() {
+		PlayerState state = new PlayerState();
+		state.snapshot(getPlayer());
+		m_Checkpoint = new Checkpoint(getPlayer(), m_StartPositions.get(0), state);
+	}
+	
+	// Respawn the player
+	public void respawn() {
+		m_Checkpoint.load();
+		getPlayer().setDead(false);
+		
+		// TODO: Reset the level to the state it was in at the checkpoint (basically, make it smarter)
+	}
 	
 	public ArrayList<Vector2> getStartPositions() {
 		return m_StartPositions;
-	}
-	
-	public Vector2 getActiveStartPosition() {
-		return m_ActiveStartPosition;
-	}
-	
-	public void setActiveStartPosition(int i) {
-		if(i < 0 || i >= m_StartPositions.size()) return;
-		m_ActiveStartPosition = m_StartPositions.get(i);
 	}
 	
 	//=========================================================================

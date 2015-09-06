@@ -13,13 +13,15 @@ public enum ComponentType {
 	
 	// Component Presets
 	COMPONENT_PLAYER(
-			COMPONENT_RENDER.getFlag() 	|
-			COMPONENT_MOVE.getFlag() 	|
-			COMPONENT_CROUCH.getFlag() 	|
-			COMPONENT_JUMP.getFlag() 	|
-			COMPONENT_LADDER.getFlag()	|
-			COMPONENT_WEAPON.getFlag()	|
-			COMPONENT_HEALTH.getFlag()),
+			COMPONENT_RENDER.getFlag() 			|
+			COMPONENT_MOVE.getFlag() 			|
+			COMPONENT_CROUCH.getFlag() 			|
+			COMPONENT_JUMP.getFlag() 			|
+			COMPONENT_LADDER.getFlag()			|
+			COMPONENT_WEAPON.getFlag()			|
+			COMPONENT_HEALTH.getFlag()			
+	),
+	
 	COMPONENT_BULLET( COMPONENT_RENDER.getFlag() | COMPONENT_MOVE.getFlag() | COMPONENT_PROJECTILE.getFlag());
 	
 	private int flag;

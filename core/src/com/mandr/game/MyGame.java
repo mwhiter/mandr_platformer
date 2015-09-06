@@ -11,7 +11,7 @@ public class MyGame extends Game  {
 	
 	@Override
 	public void create() {
-		new DatabaseUtility().initDatabase();
+		DatabaseUtility.initDatabase();
 		
 		// TODO: still highly incomplete, need to think of a good screen access system
 		setScreen(new LoadingScreen(this, "test_map.tmx"));

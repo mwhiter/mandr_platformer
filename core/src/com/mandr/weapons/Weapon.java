@@ -2,14 +2,15 @@ package com.mandr.weapons;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.mandr.database.DatabaseUtility;
 import com.mandr.entity.Entity;
-import com.mandr.entity.EntityStats;
 import com.mandr.entity.component.ComponentType;
 import com.mandr.entity.component.MoveComponent;
 import com.mandr.entity.component.RenderComponent;
 import com.mandr.entity.component.WeaponComponent;
-import com.mandr.game.GameGlobals;
+import com.mandr.game.Globals;
 import com.mandr.game.screens.GameScreen;
+import com.mandr.info.EntityInfo;
 import com.mandr.info.WeaponInfo;
 import com.mandr.util.AABB;
 import com.mandr.util.Constants;
@@ -35,14 +36,21 @@ public class Weapon {
 	private Vector2 m_ProjectileSpawnPosition;
 	private Vector2 m_ProjectileVelocity;
 	
-	/** Constructs a new weapon.
-	 * @param (float) reloadSpeed: Reload speed in seconds.
-	 * @param (int) rpm: Rounds per minute
-	 * @param: (int) damage: Damage of bullet
-	 * @param: (int) maxAmmo: Maximum ammo of the weapon.
-	 * @param: (int) magSize: Maximum size of the magazine.
+	/** Constructs a new weapon. Equivalent to Weapon(entity, stats, stats.magSize(), stats.maxAmmo()
+	 * @param entity The entity to give the weapon to.
+	 * @param stats The stats of the weapon
 	 * */
 	public Weapon(Entity entity, WeaponInfo stats) {
+		this(entity, stats, stats == null ? 0 : stats.getMagSize(), stats == null ? 0 : stats.getMaxAmmo());
+	}
+
+	/** Constructs a new weapon.
+	 * @param entity The entity to give the weapon to.
+	 * @param stats The stats of the weapon
+	 * @param currMagSize The current size of the magazine (cannot be larger than the weapon info)
+	 * @param currTotalAmmo The current total ammo of the weapon (cannot be larger than the weapon info)
+	 * */
+	public Weapon(Entity entity, WeaponInfo stats, int currMagSize, int currTotalAmmo) {
 		if(stats == null) throw new IllegalArgumentException("Stats cannot be null!");
 		
 		m_Entity = entity;
@@ -51,8 +59,8 @@ public class Weapon {
 		m_ReloadStartTime = -1;
 		m_LastFireTime = -1;
 		
-		m_CurrentMagSize = m_WeaponStats.getMagSize();
-		m_CurrentAmmoReserve = m_WeaponStats.getMaxAmmo() - m_CurrentMagSize;
+		m_CurrentMagSize = Math.min(currMagSize, m_WeaponStats.getMagSize());
+		m_CurrentAmmoReserve = Math.min(m_WeaponStats.getMaxAmmo(), currTotalAmmo) - m_CurrentMagSize;
 		
 		m_ProjectileSpawnPosition = new Vector2();
 		m_ProjectileVelocity = new Vector2();
@@ -107,7 +115,7 @@ public class Weapon {
 		spawnProjectile();
 		
 		m_CurrentMagSize -= 1;
-		m_LastFireTime = GameGlobals.getGameTime();
+		m_LastFireTime = Globals.getGameTime();
 		
 		// TODO: Burst fire support
 	}
@@ -132,20 +140,18 @@ public class Weapon {
 	
 	// TODO: Test function to spawn projectile. Figure out a better way to implement
 	private void spawnProjectile() {
-		// TODO: This should be based on the projectile stats (i.e. if we wanted to fire plasma, the size would be larger.
-		float sizeX = 0.125f;
-		float sizeY = 0.125f;
+		EntityInfo projInfo = Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_PROJECTILE", "Entities"));
+		if(projInfo == null) return;
 		
-		EntityStats projStats = new EntityStats();
-		projStats.friendly = m_Entity.isFriendly();
-		projStats.dieOffScreen = true;
-		projStats.ignoresScreenBounds = true;
-		Entity projectile = new Entity(m_ProjectileSpawnPosition.x, m_ProjectileSpawnPosition.y, sizeX, sizeY, GameGlobals.getTexture(2), ComponentType.COMPONENT_BULLET.getFlag(), projStats);
+		// TODO: Projectile stats!
+		Entity projectile = new Entity(m_ProjectileSpawnPosition.x, m_ProjectileSpawnPosition.y, Globals.getTexture(2), projInfo);
 		MoveComponent move = (MoveComponent) projectile.getComponent(ComponentType.COMPONENT_MOVE);
 		if(move == null) {
 			StringUtils.debugPrint("ERROR: Move component null for projectile!");
 			return;
 		}
+		
+		projectile.setFriendly(m_Entity.isFriendly());
 		
 		// Apply some random cone of fire.
 		Vector2 velocity = m_ProjectileVelocity;
@@ -158,11 +164,11 @@ public class Weapon {
 		move.getVelocity().set(velocity);
 
 		// Graphical stuff. Adjust sprite based on variables.
-		RenderComponent render = (RenderComponent) projectile.getComponent(ComponentType.COMPONENT_RENDER);
-		if(render != null) {
-			render.getSprite().setOrigin(render.getSprite().getWidth()/2, render.getSprite().getHeight()/2);
-			render.getSprite().setRotation(velocity.angle());
-		}
+		//RenderComponent render = (RenderComponent) projectile.getComponent(ComponentType.COMPONENT_RENDER);
+		//if(render != null) {
+		//	render.getSprite().setOrigin(render.getSprite().getWidth()/2, render.getSprite().getHeight()/2);
+		//	render.getSprite().setRotation(velocity.angle());
+		//}
 		
 		// Spawn the entity.
 		GameScreen.getLevel().getEntityManager().addEntity(projectile, false);
@@ -204,7 +210,7 @@ public class Weapon {
 		if(!canReload())
 			return;
 		
-		m_ReloadStartTime = GameGlobals.getGameTime();
+		m_ReloadStartTime = Globals.getGameTime();
 	}
 	
 	/** Stop our current reload */
@@ -266,7 +272,7 @@ public class Weapon {
 		if(!isReloading())
 			return 0;
 		
-		long reloadTime = GameGlobals.getGameTime() - m_ReloadStartTime;
+		long reloadTime = Globals.getGameTime() - m_ReloadStartTime;
 		float percent = (float) reloadTime / m_WeaponStats.getReloadSpeed();
 		
 		return Math.min(1, percent);
@@ -294,7 +300,7 @@ public class Weapon {
 	}
 	
 	private long timeSinceLastFire() {
-		return GameGlobals.getGameTime() - m_LastFireTime;
+		return Globals.getGameTime() - m_LastFireTime;
 	}
 	
 	public String getWeaponString() {

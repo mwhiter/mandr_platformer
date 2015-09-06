@@ -25,7 +25,15 @@ public class LadderComponent extends Component {
 		m_ClimbSpeed = climbSpeed;
 		m_ClimbDirection = Directions.NO_DIRECTION;
 	}
-
+	
+	@Override
+	public void reset() {
+		m_LadderTile = null;
+		m_AttachLadder = false;
+		m_DetachLadder = false;
+		m_ClimbDirection = Directions.NO_DIRECTION;
+	}
+	
 	@Override
 	public void update(float deltaTime) {
 		if(m_AttachLadder) {

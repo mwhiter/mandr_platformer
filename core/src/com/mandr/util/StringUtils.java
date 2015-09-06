@@ -1,12 +1,12 @@
 package com.mandr.util;
 
-import com.mandr.game.GameGlobals;
+import com.mandr.game.Globals;
 import com.mandr.game.MyGame;
 
 public class StringUtils {
 	public static void debugPrint(String string) {
 		if(MyGame.isDebug()) {
-			System.out.println(GameGlobals.getGameTime() + ": " + string);
+			System.out.println(Globals.getGameTime() + ": " + string);
 		}
 	}
 	

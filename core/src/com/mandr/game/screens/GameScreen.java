@@ -2,11 +2,12 @@ package com.mandr.game.screens;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.mandr.game.GameGlobals;
+import com.mandr.game.Globals;
 import com.mandr.game.MyGame;
 import com.mandr.graphics.GameRenderer;
 import com.mandr.input.InputHandler;
 import com.mandr.level.Level;
+import com.mandr.util.Constants;
 
 public class GameScreen implements Screen {
 	public enum GameState {
@@ -70,8 +71,9 @@ public class GameScreen implements Screen {
 		input.update();
 		
 		// TODO: input lag
-		while(lag >= 33) {
-			GameGlobals.changeGameTime(elapsed);
+		// 30 fps
+		while(lag >= Constants.MS_PER_UPDATE) {
+			Globals.changeGameTime(elapsed);
 			m_Level.update(1f);
 			lag -= elapsed;
 		}
@@ -100,13 +102,9 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void hide() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -3,12 +3,11 @@ package com.mandr.info;
 import com.mandr.database.DatabaseRow;
 import com.mandr.weapons.Weapon.WeaponType;
 
-
-public class WeaponInfo implements Info {
+public class WeaponInfo extends Info {
 	private int ms_per_round;		// millisec per round
 	
 	private String name;
-	private WeaponType type;
+	private WeaponType fireMode;
 	private int reloadSpeed;		// Reload speed in ms
 	private int rpm;				// Rate of fire in rounds per minute
 	private float bulletVelocity;	// Speed of bullets (in tiles per second)
@@ -20,6 +19,7 @@ public class WeaponInfo implements Info {
 	@Override
 	public boolean cacheRow(DatabaseRow row) {
 		if(row == null) return false;
+		if(!super.cacheRow(row)) return false;
 		
 		name =				row.getText("Name");
 		reloadSpeed = 		row.getInt("ReloadSpeed");
@@ -32,10 +32,10 @@ public class WeaponInfo implements Info {
 		
 		if(max_ammo > 0) mag_size = Math.min(max_ammo, mag_size);
 		
-		String type_name = 	row.getText("Type");
-		if(type_name.equalsIgnoreCase("semi")) type = WeaponType.WEAPON_TYPE_SEMI_AUTO;
-		if(type_name.equalsIgnoreCase("full")) type = WeaponType.WEAPON_TYPE_FULL_AUTO;
-		else type = null;
+		String type_name = 	row.getText("FireMode");
+		if(type_name.equalsIgnoreCase("semi")) fireMode = WeaponType.WEAPON_TYPE_SEMI_AUTO;
+		if(type_name.equalsIgnoreCase("full")) fireMode = WeaponType.WEAPON_TYPE_FULL_AUTO;
+		else fireMode = null;
 		
 		ms_per_round = 60000 / rpm;	// 60000 is MS_PER_MIN
 		
@@ -47,7 +47,7 @@ public class WeaponInfo implements Info {
 	}
 	
 	public WeaponType getWeaponType() {
-		return type;
+		return fireMode;
 	}
 	
 	public int getReloadSpeed() {

@@ -35,27 +35,23 @@ public class LoadingScreen implements Screen {
 			// TODO: Don't exactly know what I'm doing here yet
 			catch (Exception e) {
 				System.out.println("Failed to load level: " + e.getMessage());
+				e.printStackTrace();
 				this.dispose();
+				System.exit(0);
 			}
 		}
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -65,7 +61,5 @@ public class LoadingScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
-		
 	}
 }

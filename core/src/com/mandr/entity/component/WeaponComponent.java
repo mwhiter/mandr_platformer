@@ -21,6 +21,12 @@ public class WeaponComponent extends Component {
 		m_Weapons = new LinkedList<Weapon>();
 		m_ActiveWeaponIndex = -1;
 	}
+	
+	@Override
+	public void reset() {
+		m_Weapons.clear();
+		m_ActiveWeaponIndex = -1;
+	}
 
 	@Override
 	public void update(float deltaTime) {
@@ -46,8 +52,7 @@ public class WeaponComponent extends Component {
 	
 	@Override
 	public ComponentType getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return ComponentType.COMPONENT_WEAPON;
 	}
 
 	/** Set the active weapon to the index. For example, if the Pistol is in index 0 and we call setActiveWeapon(index), we will set the pistol to be the current weapon. 
@@ -62,11 +67,25 @@ public class WeaponComponent extends Component {
 		m_ActiveWeaponIndex = index;
 	}
 	
-	/** Get the active weapon of the actor. 
+	/** Get the active weapon. 
 	 * @return The active weapon.
 	 * */
 	public Weapon getActiveWeapon() {
 		return getWeapon(m_ActiveWeaponIndex);
+	}
+	
+	/** Get the active weapon index
+	 * @return The active weapon index.
+	 * */
+	public int getActiveWeaponIndex() {
+		return m_ActiveWeaponIndex;
+	}
+	
+	/** Get the list of weapons
+	 * @return The weapons
+	 */
+	public LinkedList<Weapon> getWeapons() {
+		return m_Weapons;
 	}
 	
 	public Weapon getWeapon(int index) {
@@ -94,13 +113,17 @@ public class WeaponComponent extends Component {
 	}
 	
 	public void addWeapon(WeaponInfo stats) {
+		addWeapon(stats, stats.getMagSize(), stats.getMaxAmmo());
+	}
+	
+	public void addWeapon(WeaponInfo stats, int magSize, int maxAmmo) {
 		if(stats == null) return;
 		
 		// If a weapon like this already exists, just give it some ammo instead
 		for(Weapon weap : m_Weapons) {
 			if(weap.getWeaponStats() == stats) {
 				StringUtils.debugPrint("Found duplicate weapon. Giving ammo instead.");
-				weap.giveAmmo(weap.getWeaponStats().getMagSize());
+				weap.giveAmmo(magSize);
 			}
 		}
 		
@@ -109,8 +132,7 @@ public class WeaponComponent extends Component {
 		if(m_Weapons.size() == Constants.MAX_WEAPONS)
 			return;
 		
-		// TODO: Change weapons to use new entities
-		Weapon newWeapon = new Weapon(m_Entity, stats);
+		Weapon newWeapon = new Weapon(m_Entity, stats, magSize, maxAmmo);
 		m_Weapons.add(newWeapon);
 		
 		StringUtils.debugPrint("Picked up " + newWeapon + " (TODO: Add weapon pickup event!)");

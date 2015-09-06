@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.mandr.entity.Entity;
 import com.mandr.entity.component.*;
-import com.mandr.game.GameGlobals;
+import com.mandr.game.Globals;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.level.Tile;
 import com.mandr.util.StringUtils;
@@ -72,7 +72,7 @@ public class GameHUD {
 
 		String look = "Look: " + lookVector.angle();
 		String gameEntityCount = "Entity count: " + Integer.toString(GameScreen.getLevel().getEntityManager().getNumActiveEntities()) + "/" + Integer.toString(GameScreen.getLevel().getEntityManager().getNumEntities());
-		String gameTime = "Game Time: " + StringUtils.timeString(GameGlobals.getGameTime());
+		String gameTime = "Game Time: " + StringUtils.timeString(Globals.getGameTime());
 		
 		String weaponReload = "";
 		

@@ -15,8 +15,22 @@ public abstract class Component {
 	
 	public abstract ComponentType getType();
 	public abstract void update(float deltaTime);
+	public abstract void reset();
+	
+	/** Called when an entity changes its state.
+	 * oldState : previous state
+	 * newState : new state
+	 * */
 	public abstract void stateChange(EntityState oldState, EntityState newState);
+	
+	/** Called when an entity collides with another entity. 
+	 * @param other : entity it collides with
+	 * */
 	public abstract void collision(Entity other);
+	
+	/** Called when an entity collides with a tile.
+	 * @param tile : tile it collides with
+	 * */
 	public abstract void collision(Tile tile);
 	
 	public Entity getEntity() {

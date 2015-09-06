@@ -18,6 +18,11 @@ public class CrouchComponent extends Component {
 	}
 
 	@Override
+	public void reset() {
+		m_Crouch = false;
+	}
+
+	@Override
 	public void update(float deltaTime) {
 		if(m_Entity.isCrouched()) {
 			stopCrouching();

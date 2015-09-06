@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.mandr.enums.TileType;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.util.AABB;
+import com.mandr.util.Constants;
 import com.mandr.util.Directions;
 
 // A tile on the FOREGROUND layer (i.e. something that interacts with other entities
@@ -214,4 +215,57 @@ public class Tile {
 	
 	@Override
 	public String toString() { return new String("[" + m_X + "," + m_Y + "]"); }
+
+	/** Is this tile part of a wall? A wall is defined as a solid tile with empty tiles to the left or right, with a certain height.
+	 * 
+	 * This function will have a worst-case iterations of 2*Constants.MIN_WALL_HEIGHT */
+	public boolean isWall() {
+		if(!isNonSolidTileOnEitherSide()) return false;
+		
+		
+		// Keep a count of good tiles (good tile = isNonSolidTileOnEitherSide() is true).
+		Tile currentTile = this;
+		int goodTileCount = 1;
+		
+		// go up first, terminate once we hit a bad tile
+		for(int y=m_Y+1; y <= m_Y + Constants.MIN_WALL_HEIGHT; y++) {
+			currentTile = m_Level.getTile(m_X, y);
+			if(currentTile == null || !currentTile.isNonSolidTileOnEitherSide()) break;
+			goodTileCount++;
+			
+			if(goodTileCount >= Constants.MIN_WALL_HEIGHT) return true;
+		}
+		
+		// go up first, terminate once we hit a bad tile
+		for(int y=m_Y-1; y <= m_Y - Constants.MIN_WALL_HEIGHT; y--) {
+			currentTile = m_Level.getTile(m_X, y);
+			if(currentTile == null || !currentTile.isNonSolidTileOnEitherSide()) break;
+			goodTileCount++;
+			
+			if(goodTileCount >= Constants.MIN_WALL_HEIGHT) return true;
+		}
+		
+		return false;
+	}
+	
+	// checks to see if there is an empty tile to left or right
+	private boolean isNonSolidTileOnEitherSide() {
+		Tile left = m_Level.getTile(m_X-1, m_Y);
+		Tile right = m_Level.getTile(m_X+1, m_Y);
+		
+		if(left == null && right == null) {
+			// TODO: Asserts - this should never happen
+			return false;
+		}
+		
+		if(left == null) {
+			return right.getTileType() == TileType.TILE_EMPTY;
+		}
+		else if(right == null) {
+			return left.getTileType() == TileType.TILE_EMPTY;	
+		}
+		else {
+			return left.getTileType() == TileType.TILE_EMPTY || right.getTileType() == TileType.TILE_EMPTY;
+		}
+	}
 }

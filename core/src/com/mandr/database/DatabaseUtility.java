@@ -5,19 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
-import com.mandr.game.GameGlobals;
+import com.mandr.game.Globals;
 import com.mandr.info.*;
 
 public class DatabaseUtility {
-	private Connection m_Connection;
-	private HashMap<String, ArrayList<DatabaseRow>> m_TableMap;
+	private static Connection m_Connection = null;
+	private static HashMap<String, ArrayList<DatabaseRow>> m_TableMap = new HashMap<String, ArrayList<DatabaseRow>>();
 	
-	public DatabaseUtility() {
-		m_Connection = null;
-		m_TableMap = new HashMap<String, ArrayList<DatabaseRow>>();
-	}
-	
-	public boolean initDatabase() {
+	public static boolean initDatabase() {
 		boolean success;
 		success = load("database");
 		if(success) {
@@ -31,7 +26,7 @@ public class DatabaseUtility {
 	 * @param databaseName The name of the database file.
 	 * @return Whether the connection was successful or not
 	 * */
-	private boolean load(String databaseName) {
+	private static boolean load(String databaseName) {
 		try {
 			Class.forName("org.sqlite.JDBC");
 			m_Connection = DriverManager.getConnection("jdbc:sqlite:" + Gdx.files.internal("bin/database/" + databaseName));
@@ -46,21 +41,22 @@ public class DatabaseUtility {
 	/** Load data from the tables in the database into hashmaps, which will be accessed by fetchDatabase() to put into game-readable format
 	 * @return Whether or not loading the tables was successful.
 	 * */
-	private boolean loadDatabase() {
+	private static boolean loadDatabase() {
 		boolean success;
 		success = loadTable("Weapons");
 		success = loadTable("Items");
+		success = loadTable("Entities");
 		return success;
 	}
 	
-	private ArrayList<DatabaseRow> getTable(String tableName) {
+	private static ArrayList<DatabaseRow> getTable(String tableName) {
 		return m_TableMap.get(tableName);
 	}
 	
 	/** Load a table into the database.
 	 * @param The name of the table to load.
 	 * @returns Whether or not the load was successful. */
-	private boolean loadTable(String tableName) {
+	private static boolean loadTable(String tableName) {
 		Statement statement = null;
 		try {
 			// Create the SQL statement
@@ -96,25 +92,48 @@ public class DatabaseUtility {
 	 * @param rows The ArrayList storing all the rows
 	 * @throws SQLException 
 	 */
-	public void loadRow(String tableName, ResultSet rs, ResultSetMetaData meta, ArrayList<DatabaseRow> rows) throws SQLException {
+	public static void loadRow(String tableName, ResultSet rs, ResultSetMetaData meta, ArrayList<DatabaseRow> rows) throws SQLException {
 		DatabaseRow row = new DatabaseRow();
 		row.load(rs, meta);
 		rows.add(row);
 	}
 	
+	/** Returns an ID from type name (from the specified table).
+	 * For example, if I send it typeName = "ENTITY_PLAYER", tableName = "Entities", it should return 0.
+	 * It is up to the caller of this function to use this ID appropriately, since this method has no way of knowing what info you're looking for.
+	 * @param typeName The type name to send (example: "ENTITY_PLAYER")
+	 * @param tableName The table to look up.
+	 * @return The ID of the type name, or -1 if none exists.
+	 * */
+	public static int getIDFromTypeName(String typeName, String tableName) {
+		ArrayList<DatabaseRow> rows = m_TableMap.get(tableName);
+		if(rows == null) return -1;
+		
+		for(DatabaseRow row : rows) {
+			String type = row.getText("Type");
+			if(type.equalsIgnoreCase(typeName)) {
+				return row.getInt("ID");
+			}
+		}
+		
+		return -1;
+	}
+	
 	/** Fetch the database.
 	 * @return Whether or not fetching was successful. */
-	private boolean fetchDatabase() {
+	private static boolean fetchDatabase() {
 		boolean success;
-		success = cacheWeaponTable(GameGlobals.getWeaponStats(), "Weapons");
-		success = cacheItemTable(GameGlobals.getItemInfos(), "Items");
+		success = cacheItemTable(Globals.getItemInfos(), "Items");
+		success = cacheWeaponTable(Globals.getWeaponStats(), "Weapons");
+		success = cacheEntityTable(Globals.getEntityInfos(), "Entities");
 		return success;
 	}
 	
-	// I'd rather avoid having to do ugly factor instantiation for generic types. I'd like to do T info = new T();. But we can't do that in Java (praise C++!) so I'm going to just have a bunch of overriden methods
+	// I'd rather avoid having to do ugly factory instantiation for generic types.
+	// I'd like to do T info = new T();. But we can't do that in Java (praise C++!) so I'm going to just have a bunch of overriden methods
 	// Terrible hack, but unavoidable.
 	
-	private boolean cacheWeaponTable(ArrayList<WeaponInfo> collection, String tableName) {
+	private static boolean cacheWeaponTable(ArrayList<WeaponInfo> collection, String tableName) {
 		ArrayList<DatabaseRow> table = getTable(tableName);
 		if(table != null) {
 			for(DatabaseRow row : table) {
@@ -129,11 +148,26 @@ public class DatabaseUtility {
 		}
 	}
 	
-	private boolean cacheItemTable(ArrayList<ItemInfo> collection, String tableName) {
+	private static boolean cacheItemTable(ArrayList<ItemInfo> collection, String tableName) {
 		ArrayList<DatabaseRow> table = getTable(tableName);
 		if(table != null) {
 			for(DatabaseRow row : table) {
 				ItemInfo info = new ItemInfo();
+				info.cacheRow(row);
+				collection.add(info);
+			}
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private static boolean cacheEntityTable(ArrayList<EntityInfo> collection, String tableName) {
+		ArrayList<DatabaseRow> table = getTable(tableName);
+		if(table != null) {
+			for(DatabaseRow row : table) {
+				EntityInfo info = new EntityInfo();
 				info.cacheRow(row);
 				collection.add(info);
 			}

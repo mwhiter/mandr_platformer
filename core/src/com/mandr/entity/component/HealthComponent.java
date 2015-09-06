@@ -15,20 +15,20 @@ public class HealthComponent extends Component {
 	}
 
 	@Override
-	public void update(float deltaTime) {
-		// TODO Auto-generated method stub
-		
+	public void reset() {
+		m_Health = m_MaxHealth;
 	}
 
 	@Override
-	public void stateChange(EntityState oldState, EntityState newState) {
-		// TODO Auto-generated method stub
-		
+	public void update(float deltaTime) {
+	}
+
+	@Override
+	public void stateChange(EntityState oldState, EntityState newState) {		
 	}
 
 	@Override
 	public ComponentType getType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

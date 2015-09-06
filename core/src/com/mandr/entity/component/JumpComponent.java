@@ -4,7 +4,7 @@ package com.mandr.entity.component;
 import com.mandr.entity.Entity;
 import com.mandr.enums.EntityState;
 import com.mandr.enums.TileType;
-import com.mandr.game.GameGlobals;
+import com.mandr.game.Globals;
 import com.mandr.game.screens.GameScreen;
 import com.mandr.level.Tile;
 import com.mandr.util.AABB;
@@ -21,10 +21,18 @@ public class JumpComponent extends Component {
 		super(entity);
 		m_ShouldJump = false;
 		m_ShouldJumpDown = false;
-		m_JumpVelocity = jumpVelocity;
 		m_FallStartedTime = -1;
+		
+		m_JumpVelocity = jumpVelocity;
 	}
-
+	
+	@Override
+	public void reset() {
+		m_FallStartedTime = -1;
+		m_ShouldJump = false;
+		m_ShouldJumpDown = false;
+	}
+	
 	@Override
 	public void update(float deltaTime) {
 		// If should jump, then change state to the jump
@@ -48,7 +56,6 @@ public class JumpComponent extends Component {
 
 	@Override
 	public void stateChange(EntityState oldState, EntityState newState) {
-
 		if(newState == EntityState.ENTITY_STATE_JUMP) {
 			// Let ladder component take care of this
 			if(m_Entity.isOnLadder())
@@ -107,10 +114,13 @@ public class JumpComponent extends Component {
 			}
 		}
 		
+		if(m_Entity.isAttachedToWall())
+			return true;
+		
 		if(!((MoveComponent)m_Entity.getComponent(ComponentType.COMPONENT_MOVE)).isGrounded()) {
 			if(m_FallStartedTime == -1) return false;
 			
-			long difference = GameGlobals.getGameTime() - m_FallStartedTime;
+			long difference = Globals.getGameTime() - m_FallStartedTime;
 			if(difference >= Constants.FALL_PADDING)
 				return false;
 		}
@@ -148,12 +158,13 @@ public class JumpComponent extends Component {
 	}
 	
 	public void setFallBegun() {
-		m_FallStartedTime = GameGlobals.getGameTime();
+		m_FallStartedTime = Globals.getGameTime();
 	}
 
 	@Override
 	public void collision(Entity other) {}
 
 	@Override
-	public void collision(Tile tile) {}
+	public void collision(Tile tile) {
+	}
 }

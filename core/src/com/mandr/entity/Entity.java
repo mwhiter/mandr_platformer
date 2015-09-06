@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.mandr.entity.component.*;
 import com.mandr.enums.EntityState;
 import com.mandr.game.screens.GameScreen;
+import com.mandr.info.EntityInfo;
 import com.mandr.info.WeaponInfo;
 import com.mandr.level.Tile;
 import com.mandr.util.AABB;
@@ -34,53 +35,70 @@ public class Entity {
 	
 	private boolean m_Dead;
 	
-	private EntityStats m_Stats;
-	
-	public Entity(float x, float y, float width, float height, Texture texture, int componentList) {
-		this(x,y,width,height, texture, componentList, new EntityStats());
-	}	
+	private EntityInfo m_Stats;
+	private boolean m_Friendly;
 	
 	/** Constructs a new Entity with the given parameters
-	 * x the x-position
-	 * y the y-position
-	 * width the width of the entity
-	 * height the height of the entity
-	 * componentList the components
-	 * stats the stats of the entity
+	 * x The x-position
+	 * y The y-position
+	 * texture The entity's texture
+	 * stats The stats of the entity
+	 * @throw IllegalArgumentException If stats is null
 	 * */
-	public Entity(float x, float y, float width, float height, Texture texture, int componentList, EntityStats stats) {
-		// TODO: missing enemy flag
+	public Entity(float x, float y, Texture texture, EntityInfo stats) {
+		if(stats == null) throw new IllegalArgumentException("Stats cannot be null!");
 		
-		m_ComponentList = componentList;
+		m_ComponentList = stats.getComponents();
 		m_Components = new HashMap<ComponentType, Component>();
 		
 		m_StartPosition = new Vector2(x,y);
 		m_EndPosition = new Vector2(x,y);
-		m_Size = new Vector2(width, height);
+		m_Size = new Vector2(stats.getSizeX(), stats.getSizeY());
 		m_State = EntityState.NO_ENTITY_STATE;
 		
+		m_Friendly = stats.isFriendly();
 		m_LookVector = new Vector2(1,0);
 	
 		m_Dead = false;
 		m_Stats= stats;
 		
-		// TODO: Fix the components, and then add WeaponComponent
-		if(hasComponent(ComponentType.COMPONENT_RENDER))	m_Components.put(ComponentType.COMPONENT_RENDER, new RenderComponent(this, texture));
+		// todo: animation should be loaded separately
+		if(hasComponent(ComponentType.COMPONENT_RENDER))	m_Components.put(ComponentType.COMPONENT_RENDER, new RenderComponent(this, "test_player.xml"));
+		
 		// The following components need to have a move controller to function
 		if(hasComponent(ComponentType.COMPONENT_MOVE)) {
-			m_Components.put(ComponentType.COMPONENT_MOVE, new MoveComponent(this, stats.moveSpeed));
-			if(hasComponent(ComponentType.COMPONENT_CROUCH))	m_Components.put(ComponentType.COMPONENT_CROUCH, new CrouchComponent(this, stats.crouchSpeed));
-			if(hasComponent(ComponentType.COMPONENT_JUMP))		m_Components.put(ComponentType.COMPONENT_JUMP, 	new JumpComponent(this, stats.jumpSpeed));
-			if(hasComponent(ComponentType.COMPONENT_LADDER))	m_Components.put(ComponentType.COMPONENT_LADDER, new LadderComponent(this, stats.climbSpeed));
+			// Put the move component
+			m_Components.put(ComponentType.COMPONENT_MOVE, new MoveComponent(this, stats.getMoveSpeed()));
+			
+			if(hasComponent(ComponentType.COMPONENT_CROUCH))	m_Components.put(ComponentType.COMPONENT_CROUCH, new CrouchComponent(this, stats.getCrouchSpeed()));
+			if(hasComponent(ComponentType.COMPONENT_JUMP)) {
+				m_Components.put(ComponentType.COMPONENT_JUMP, 	new JumpComponent(this, stats.getJumpSpeed()));
+			}
+			if(hasComponent(ComponentType.COMPONENT_LADDER))	m_Components.put(ComponentType.COMPONENT_LADDER, new LadderComponent(this, stats.getClimbSpeed()));
 		}
-		if(hasComponent(ComponentType.COMPONENT_WEAPON)) m_Components.put(ComponentType.COMPONENT_WEAPON, new WeaponComponent(this));
-		if(hasComponent(ComponentType.COMPONENT_HEALTH)) m_Components.put(ComponentType.COMPONENT_HEALTH, new HealthComponent(this, stats.maxHealth));
-		if(hasComponent(ComponentType.COMPONENT_PROJECTILE)) m_Components.put(ComponentType.COMPONENT_PROJECTILE, new ProjectileComponent(this));
-		if(hasComponent(ComponentType.COMPONENT_ITEM)) m_Components.put(ComponentType.COMPONENT_ITEM, new ItemComponent(this, stats.itemStats));
+		
+		if(hasComponent(ComponentType.COMPONENT_WEAPON)) 		m_Components.put(ComponentType.COMPONENT_WEAPON, new WeaponComponent(this));
+		if(hasComponent(ComponentType.COMPONENT_HEALTH)) 		m_Components.put(ComponentType.COMPONENT_HEALTH, new HealthComponent(this, stats.getMaxHealth()));
+		if(hasComponent(ComponentType.COMPONENT_PROJECTILE))	m_Components.put(ComponentType.COMPONENT_PROJECTILE, new ProjectileComponent(this));
+		if(hasComponent(ComponentType.COMPONENT_ITEM)) 			m_Components.put(ComponentType.COMPONENT_ITEM, new ItemComponent(this, stats.getItemInfo()));
+	}
+
+	/** Reset the entity and all its components. */
+	public void reset() {
+		Iterator<HashMap.Entry<ComponentType, Component>> it = m_Components.entrySet().iterator();
+		while(it.hasNext()) {
+			HashMap.Entry<ComponentType, Component> pair = (HashMap.Entry<ComponentType, Component>) it.next();
+			if(hasComponent((ComponentType) pair.getKey())) {
+				((Component) pair.getValue()).reset();
+			}
+		}
 	}
 	
 	/** Update the entity */
 	public void update(float deltaTime) {
+		
+		//StringUtils.debugPrint(hasComponent(ComponentType.COMPONENT_ITEM) + " " + m_StartPosition);
+		
 		m_StartPosition.set(m_EndPosition);
 		
 		updateComponent(ComponentType.COMPONENT_CROUCH, deltaTime);
@@ -89,6 +107,7 @@ public class Entity {
 		updateComponent(ComponentType.COMPONENT_MOVE, 	deltaTime);
 		updateComponent(ComponentType.COMPONENT_WEAPON, deltaTime);
 		
+		//StringUtils.debugPrint(hasComponent(ComponentType.COMPONENT_ITEM) + " " + m_EndPosition);
 		validate();
 	}
 	
@@ -107,24 +126,22 @@ public class Entity {
 		float leftX = GameScreen.getLevel().getLevelBoundaryX();
 		float bottomY = GameScreen.getLevel().getLevelBoundaryY();
 		
-		if(!m_Stats.ignoresScreenBounds) {
+		if(!m_Stats.isIgnoreScreenBounds()) {
 			m_EndPosition.x = Math.max(leftX,  m_EndPosition.x);
 			m_EndPosition.x = Math.min(m_EndPosition.x, GameScreen.getLevel().getWidth() - m_Size.x);			
 		}
+		
+		// Reached the bottom of the level - always kill
+		if(m_EndPosition.y < bottomY) {
+			setDead(true);
+		}
 		// If the entity dies off screen, then kill once it has passed screen boundaries
-		if(m_Stats.dieOffScreen) {
+		else if(m_Stats.isDieOffScreen()) {
 			// TODO: magic number
 			if(!isOnScreen(0.1f)) {
 				setDead(true);
 			}
 		}
-		else {
-			// Reached the bottom of the level - always kill
-			if(m_EndPosition.y < bottomY) {
-				setDead(true);
-			}			
-		}
-		
 	}
 	
 	/** Is the entity on the screen?
@@ -146,6 +163,12 @@ public class Entity {
 		
 	}
 	
+	// Force the entity's position at (x,y)
+	public void setPosition(float x, float y) {
+		m_StartPosition.set(x,y);
+		m_EndPosition.set(x,y);
+	}
+	
 	/** Get entity's old position. 
 	 * @return position of the entity */
 	public Vector2 getStartPosition() {
@@ -164,10 +187,6 @@ public class Entity {
 		return m_Size;
 	}
 	
-	public boolean isFriendly() {
-		return m_Stats.friendly;
-	}
-	
 	public void setDead(boolean value) {
 		m_Dead = value;
 	}
@@ -176,7 +195,7 @@ public class Entity {
 		return m_Dead;
 	}
 	
-	public EntityStats getStats() {
+	public EntityInfo getStats() {
 		return m_Stats;
 	}
 	
@@ -329,6 +348,12 @@ public class Entity {
 		return m_State == EntityState.ENTITY_STATE_JUMP;
 	}
 	
+	/** Is the entity attached to a wall?
+	 * @return Whether the entity is attached to a wall. */
+	public boolean isAttachedToWall() {
+		return m_State == EntityState.ENTITY_STATE_WALL_ATTACH;
+	}
+	
 	/** Helper function to determine whether or not entity collides with the world.
 	 * @return whether or not entity collides with world. */
 	public static boolean collideWorld(AABB box) {
@@ -374,5 +399,13 @@ public class Entity {
 				component.collision(ent);
 			}
 		}
+	}
+
+	public boolean isFriendly() {
+		return m_Friendly;
+	}
+	
+	public void setFriendly(boolean friendly) {
+		m_Friendly = friendly;
 	}
 }

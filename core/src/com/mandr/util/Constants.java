@@ -2,9 +2,11 @@ package com.mandr.util;
 
 public class Constants {
 	// Core engine stuff
+	public static final int MS_PER_UPDATE = 33;
 	public static final int NUM_TILES_ON_GAME_SCREEN_WIDTH = 24;
 	public static final int NUM_TILES_ON_GAME_SCREEN_HEIGHT = 18;
 	public static final int NUM_PIXELS_PER_TILE = 16;
+	public static final int MIN_WALL_HEIGHT = 5;					// Number of valid tiles that must be present to be considered a wall-climbable wall
 	
 	// Input
 	public static final float INPUT_NO_LOOKDOWN_ANGLE = 30;			// Angle below the player we can't look down. (e.g. 30 degrees means we can't look from (270-30) to (270+30) degrees
