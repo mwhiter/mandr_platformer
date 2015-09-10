@@ -24,12 +24,19 @@ public class CrouchComponent extends Component {
 
 	@Override
 	public void update(float deltaTime) {
+		processMessages();
+		
 		if(m_Entity.isCrouched()) {
 			stopCrouching();
 		}
 		if(m_Crouch) {
 			m_Entity.changeState(EntityState.ENTITY_STATE_CROUCH);
 		}
+	}
+	
+	@Override
+	public void receiveMessage(ComponentMessage msg) {
+
 	}
 
 	@Override

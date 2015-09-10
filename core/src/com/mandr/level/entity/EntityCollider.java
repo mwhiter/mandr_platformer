@@ -87,7 +87,7 @@ public class EntityCollider {
 		}
 	}
 	
-	// Loop through all collisions and do something if they are
+	// Loop through all collisions and do something if they exist
 	private void handleCollision() {
 		// Collide with tiles
 		Iterator<HashMap.Entry<Entity, LinkedList<Tile>>> tileIterator = m_TileCollisions.entrySet().iterator();

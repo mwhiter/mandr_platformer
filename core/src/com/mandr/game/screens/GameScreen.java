@@ -67,22 +67,27 @@ public class GameScreen implements Screen {
 		previous = current;
 		lag += elapsed;
 		
+		System.out.println("New frame.");
 		
 		input.update();
 		
 		// TODO: input lag
 		// 30 fps
 		while(lag >= Constants.MS_PER_UPDATE) {
-			Globals.changeGameTime(elapsed);
-			m_Level.update(1f);
+			if(m_GameState == GameState.GAME_RUNNING) {
+				Globals.changeGameTime(elapsed);
+				m_Level.update(1f);
+			}
+			
 			lag -= elapsed;
 		}
+		
+		if(m_GameState == GameState.GAME_PAUSED)
+			delta = 0;		
 		
 		// Always render
 		m_Renderer.draw(delta);
 		
-		//if(m_GameState == GameState.GAME_PAUSED)
-		//	delta = 0;		
 	}
 
 	@Override

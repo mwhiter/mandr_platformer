@@ -37,7 +37,24 @@ public class RenderComponent extends Component {
 
 	@Override
 	public void update(float deltaTime) {
-		// empty method, use drawable interface instead
+		processMessages();
+	}
+	
+	@Override
+	public void receiveMessage(ComponentMessage msg) {
+		// TODO: This is too simple. Animation states are more complicated than this.
+		switch(msg) {
+		case MESSAGE_MOVE_LEFT:
+			setAnimState(AnimState.ANIM_STATE_MOVE_LEFT);
+			break;
+		case MESSAGE_MOVE_RIGHT:
+			setAnimState(AnimState.ANIM_STATE_MOVE_RIGHT);
+			break;
+		case MESSAGE_MOVE_STOP:
+			setAnimState(AnimState.ANIM_STATE_IDLE);
+			break;
+		default: break;
+		}
 	}
 
 	@Override
@@ -58,19 +75,31 @@ public class RenderComponent extends Component {
 
 	/** Looks at the animation state, and returns the correct animation 
 	 * @return The current animation */
-	private Animation getAnim() {
-		switch(m_AnimState) {
-		case ANIM_STATE_IDLE: return m_Animations.get("IDLE");
-		default: return null;
-		}
+	private Animation getAnim() {	
+		return m_Animations.get(m_AnimState.name);
+	}
+	
+	public AnimState getAnimState() {
+		return m_AnimState;
+	}
+	
+	// TODO Do we want this function? I don't think so. Receive some sort of signal or message, and then update the anim state accordingly.
+	public void setAnimState(AnimState state) {
+		m_AnimState = state;
 	}
 	
 	// TODO: Render animation
-	public void draw(SpriteBatch batch) {
+	public void draw(float delta, SpriteBatch batch) {
 		float scale = 1 / (float) Constants.NUM_PIXELS_PER_TILE;
 		
-		stateTime += Gdx.graphics.getDeltaTime();
+		stateTime += delta;
+		
+		// TODO What do we do if this is null?
 		Animation anim = getAnim();
+		if(anim == null) {
+			System.out.println("WARNING! Entity animation is null! What do we do?");
+		}
+		
 		m_CurrentFrame = anim.getKeyFrame(stateTime, true);
 		
 		// Width/Height of the Sprite scaled to game size

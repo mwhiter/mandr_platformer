@@ -36,6 +36,8 @@ public class LadderComponent extends Component {
 	
 	@Override
 	public void update(float deltaTime) {
+		processMessages();
+		
 		if(m_AttachLadder) {
 			m_AttachLadder = false;
 			doAttach();
@@ -50,6 +52,11 @@ public class LadderComponent extends Component {
 		validate();
 	}
 
+	@Override
+	public void receiveMessage(ComponentMessage msg) {
+
+	}
+	
 	@Override
 	public void stateChange(EntityState oldState, EntityState newState) {
 		// No longer on a ladder

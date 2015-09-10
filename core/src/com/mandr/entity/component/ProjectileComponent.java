@@ -14,6 +14,12 @@ public class ProjectileComponent extends Component {
 
 	@Override
 	public void update(float deltaTime) {
+		processMessages();
+	}
+	
+	@Override
+	public void receiveMessage(ComponentMessage msg) {
+
 	}
 
 	@Override

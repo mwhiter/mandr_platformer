@@ -16,32 +16,32 @@ public class MoveComponent extends Component {
 	private Vector2 m_Velocity;
 	
 	private float m_Speed;
+	private Tile m_CeilingTile;					// Tile on the entity's ceiling
+	private Tile m_GroundTile;					// Tile on the entity's ground
+	private Directions m_InputMoveDirection;	// Direction we are pressing from input
 	
-	protected Tile m_GroundTile;		// Tile on the entity's ground
-	protected Tile m_CeilingTile;		// Tile on the entity's ceiling
-
 	public MoveComponent(Entity entity, float speed) {
 		super(entity);
 		
 		m_Velocity = new Vector2();
-		
-		m_GroundTile = null;
 		m_Speed = speed;
-		
 		m_GroundTile = null;
-		m_CeilingTile = null;
+		m_CeilingTile = null;		
+		m_InputMoveDirection = Directions.NO_DIRECTION;
 	}
 
 	@Override
 	public void reset() {
 		m_Velocity.set(0,0);
 		m_GroundTile = null;
-		m_GroundTile = null;
 		m_CeilingTile = null;
+		m_InputMoveDirection = Directions.NO_DIRECTION;
 	}
 	
 	@Override
 	public void update(float deltaTime) {
+		processMessages();
+		
 		boolean groundedBefore = isGrounded();
 		
 		m_Velocity.x = giveVelocityX();
@@ -69,6 +69,25 @@ public class MoveComponent extends Component {
 				
 				//System.out.println("Fall started!");
 			}
+		}
+	}
+	
+	@Override
+	public void receiveMessage(ComponentMessage msg) {
+		switch(msg) {
+		case MESSAGE_MOVE_LEFT:
+			m_Velocity.x = -getSpeed();
+			setInputMoveDirection(Directions.DIRECTION_LEFT);
+			break;
+		case MESSAGE_MOVE_RIGHT:
+			m_Velocity.x = getSpeed();
+			setInputMoveDirection(Directions.DIRECTION_RIGHT);
+			break;
+		case MESSAGE_MOVE_STOP:
+			m_Velocity.x = 0;
+			setInputMoveDirection(Directions.NO_DIRECTION);
+			break;
+		default: break;
 		}
 	}
 	
@@ -218,6 +237,18 @@ public class MoveComponent extends Component {
 	public Directions getMoveDirectionX() {
 		if(m_Velocity.x == 0) return Directions.NO_DIRECTION;
 		return m_Velocity.x > 0 ? Directions.DIRECTION_RIGHT : Directions.DIRECTION_LEFT;
+	}
+
+	/** Get the direction we are pressing from input
+	 * @return Direction we are pressing */
+	public Directions getInputMoveDirection() {
+		return m_InputMoveDirection;
+	}
+
+	/** Set the direction we are pressing from input
+	 * @return Direction we are pressing */
+	public void setInputMoveDirection(Directions direction) {
+		m_InputMoveDirection = direction;
 	}
 	
 	//=========================================================================

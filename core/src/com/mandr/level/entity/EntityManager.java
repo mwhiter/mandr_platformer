@@ -76,9 +76,9 @@ public class EntityManager {
 		m_RemoveEntities.clear();		
 	}
 	
-	public void draw(SpriteBatch batch) {
+	public void draw(float delta, SpriteBatch batch) {
 		for(Entity ent : m_ActiveEntities) {
-			ent.draw(batch);
+			ent.draw(delta, batch);
 		}
 	}
 	

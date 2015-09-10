@@ -62,7 +62,8 @@ public class Entity {
 		m_Dead = false;
 		m_Stats= stats;
 		
-		// todo: animation should be loaded separately
+		// TODO animation should be loaded separately
+		// TODO this cannot possibly be done at object creation. Must load all this separate!!!!
 		if(hasComponent(ComponentType.COMPONENT_RENDER))	m_Components.put(ComponentType.COMPONENT_RENDER, new RenderComponent(this, "test_player.xml"));
 		
 		// The following components need to have a move controller to function
@@ -106,14 +107,15 @@ public class Entity {
 		updateComponent(ComponentType.COMPONENT_LADDER, deltaTime);
 		updateComponent(ComponentType.COMPONENT_MOVE, 	deltaTime);
 		updateComponent(ComponentType.COMPONENT_WEAPON, deltaTime);
+		updateComponent(ComponentType.COMPONENT_RENDER, deltaTime);
 		
 		//StringUtils.debugPrint(hasComponent(ComponentType.COMPONENT_ITEM) + " " + m_EndPosition);
 		validate();
 	}
 	
-	public void draw(SpriteBatch batch) {
+	public void draw(float delta, SpriteBatch batch) {
 		if(hasComponent(ComponentType.COMPONENT_RENDER))
-			((RenderComponent)m_Components.get(ComponentType.COMPONENT_RENDER)).draw(batch);
+			((RenderComponent)m_Components.get(ComponentType.COMPONENT_RENDER)).draw(delta, batch);
 	}
 	
 	public void draw(ShapeRenderer render) {
@@ -245,6 +247,17 @@ public class Entity {
 	/** Returns the entity's component if he has it. */
 	public Component getComponent(ComponentType componentType) {
 		return m_Components.get(componentType);
+	}
+	
+
+	
+	/** Send a message to a component
+	 * @param receipient : The component which will receive the message
+	 * @param msg : The message
+	 * */
+	public void sendMessage(ComponentType receipient, ComponentMessage msg) {
+		if(!hasComponent(receipient)) return;
+		getComponent(receipient).addMessage(msg);
 	}
 	
 	//=========================================================================

@@ -25,8 +25,14 @@ public class ItemComponent extends Component {
 
 	@Override
 	public void update(float deltaTime) {
+		processMessages();
 	}
 
+	@Override
+	public void receiveMessage(ComponentMessage msg) {
+
+	}
+	
 	@Override
 	public void stateChange(EntityState oldState, EntityState newState) {
 	}

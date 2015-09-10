@@ -45,7 +45,9 @@ public class GameHUD {
 		MoveComponent move = (MoveComponent) entity.getComponent(ComponentType.COMPONENT_MOVE);
 		LadderComponent ladder = (LadderComponent) entity.getComponent(ComponentType.COMPONENT_LADDER);
 		WeaponComponent weapon = (WeaponComponent) entity.getComponent(ComponentType.COMPONENT_WEAPON);
+		RenderComponent render = (RenderComponent) entity.getComponent(ComponentType.COMPONENT_RENDER);
 		Weapon activeWeapon = null;
+		String astate = "";
 		
 		if(move != null) {
 			velocity = move.getVelocity();
@@ -58,6 +60,10 @@ public class GameHUD {
 		
 		if(weapon != null) {
 			activeWeapon = weapon.getActiveWeapon();
+		}
+		
+		if(render != null) {
+			 astate = "Anim State: " + render.getAnimState();
 		}
 		
 		String pos = "Pos: [" + trim(Float.toString(position.x), 6) + " " + trim(Float.toString(position.y), 6) + "]";
@@ -85,22 +91,23 @@ public class GameHUD {
 		
 		// Game Info
 		m_Font.draw(batch, gameTime, 		screenWidth - 350, screenHeight - 20);
-		m_Font.draw(batch, fps, 			screenWidth - 350, screenHeight - 40 );
+		m_Font.draw(batch, fps, 			screenWidth - 350, screenHeight - 40);
 		m_Font.draw(batch, gameEntityCount, screenWidth - 350, screenHeight - 60);
 		
 		// Camera
-		m_Font.draw(batch, camera, 			screenWidth - 350, screenHeight - 80 );
+		m_Font.draw(batch, camera, 			screenWidth - 350, screenHeight - 80);
 		
 		// Entity state
 		m_Font.draw(batch, pos, 			screenWidth - 350, screenHeight - 120);
 		m_Font.draw(batch, vel, 			screenWidth - 350, screenHeight - 140);
-		m_Font.draw(batch, ground, 			screenWidth - 350, screenHeight - 180 );
-		m_Font.draw(batch, ladderStr, 		screenWidth - 350, screenHeight - 200 );
-		m_Font.draw(batch, state, 			screenWidth - 350, screenHeight - 220 );
+		m_Font.draw(batch, ground, 			screenWidth - 350, screenHeight - 180);
+		m_Font.draw(batch, ladderStr, 		screenWidth - 350, screenHeight - 200);
+		m_Font.draw(batch, state, 			screenWidth - 350, screenHeight - 220);
+		m_Font.draw(batch,  astate, 		screenWidth - 350, screenHeight - 240);
 		
 		// Weapons
-		m_Font.draw(batch, look, 	screenWidth - 350, screenHeight - 240);
-		m_Font.draw(batch, weaponReload, 	screenWidth - 350, screenHeight - 260);
+		m_Font.draw(batch, look, 			screenWidth - 350, screenHeight - 260);
+		m_Font.draw(batch, weaponReload, 	screenWidth - 350, screenHeight - 280);
 	}
 	
 	// TODO: Test function just to see how aiming / weapons look like

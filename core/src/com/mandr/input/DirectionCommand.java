@@ -1,6 +1,7 @@
 package com.mandr.input;
 
 import com.mandr.entity.Entity;
+import com.mandr.entity.component.ComponentMessage;
 import com.mandr.entity.component.ComponentType;
 import com.mandr.entity.component.CrouchComponent;
 import com.mandr.entity.component.LadderComponent;
@@ -62,12 +63,15 @@ public class DirectionCommand extends Command {
 	}
 	
 	// Set the entity's velocity in the specified direction
-	private void startMoveX(Entity entity, Directions direction) {
-		MoveComponent move = (MoveComponent) entity.getComponent(ComponentType.COMPONENT_MOVE);
-		if(move == null) return;
-		
-		float speed = move.getSpeed();
-		move.getVelocity().x = direction == Directions.DIRECTION_RIGHT ? speed : -speed;
+	private void startMoveX(Entity entity, Directions direction) {		
+		if(direction == Directions.DIRECTION_LEFT) {
+			entity.sendMessage(ComponentType.COMPONENT_MOVE, ComponentMessage.MESSAGE_MOVE_LEFT);
+			entity.sendMessage(ComponentType.COMPONENT_RENDER, ComponentMessage.MESSAGE_MOVE_LEFT);
+		}
+		else if (direction == Directions.DIRECTION_RIGHT) {
+			entity.sendMessage(ComponentType.COMPONENT_MOVE, ComponentMessage.MESSAGE_MOVE_RIGHT);
+			entity.sendMessage(ComponentType.COMPONENT_RENDER, ComponentMessage.MESSAGE_MOVE_RIGHT);
+		}
 	}
 	
 	// Stop entity's movement in direction if he's already moving in that direction
@@ -75,8 +79,10 @@ public class DirectionCommand extends Command {
 		MoveComponent move = (MoveComponent) entity.getComponent(ComponentType.COMPONENT_MOVE);
 		if(move == null) return;
 		
-		if(move.getMoveDirectionX() == direction)
-			move.getVelocity().x = 0;
+		if(move.getInputMoveDirection() == direction) {
+			entity.sendMessage(ComponentType.COMPONENT_MOVE, ComponentMessage.MESSAGE_MOVE_STOP);
+			entity.sendMessage(ComponentType.COMPONENT_RENDER, ComponentMessage.MESSAGE_MOVE_STOP);
+		}
 	}
 	
 	@Override

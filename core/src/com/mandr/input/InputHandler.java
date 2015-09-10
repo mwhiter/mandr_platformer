@@ -107,6 +107,12 @@ public class InputHandler {
 		Entity entity = GameScreen.getLevel().getPlayer();
 		Command command = m_Keys[keycode];
 		
+		// If the game is paused, the only commands that will run (for now) is unpause
+		//if(m_GameScreen.isPaused()) {
+		//	if(!(command instanceof PauseCommand))
+		//		return;
+		//}
+		
 		if(entity == null || command == null) return;
 		if((isKeyJustPressed(keycode) || isKeyStillPressed(keycode)) && m_GameScreen.isPaused() && !command.validDuringPause()) return;
 		
@@ -243,21 +249,29 @@ public class InputHandler {
 	
 	// Is this key still not being pressed?
 	public boolean isKeyStillReleased(int keycode) {
+		if(keycode < 0 || keycode >= MAX_KEYS)
+			return false;
 		return !m_KeysCurrentState[keycode] && !m_KeysLastState[keycode];
 	}
 	
 	// Was this key just pressed?
 	public boolean isKeyJustPressed(int keycode) {
+		if(keycode < 0 || keycode >= MAX_KEYS)
+			return false;
 		return m_KeysCurrentState[keycode] && !m_KeysLastState[keycode];
 	}
 
 	// Was this key just released?
 	public boolean isKeyJustReleased(int keycode) {
+		if(keycode < 0 || keycode >= MAX_KEYS)
+			return false;
 		return !m_KeysCurrentState[keycode] && m_KeysLastState[keycode];
 	}
 
 	// Is this key being held down?
 	public boolean isKeyStillPressed(int keycode) {
+		if(keycode < 0 || keycode >= MAX_KEYS)
+			return false;
 		return m_KeysCurrentState[keycode] && m_KeysLastState[keycode];
 	}
 	

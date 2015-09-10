@@ -35,6 +35,8 @@ public class JumpComponent extends Component {
 	
 	@Override
 	public void update(float deltaTime) {
+		processMessages();
+		
 		// If should jump, then change state to the jump
 		if(m_ShouldJump) {
 			if(canJumpDown()) {
@@ -52,6 +54,11 @@ public class JumpComponent extends Component {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public void receiveMessage(ComponentMessage msg) {
+
 	}
 
 	@Override

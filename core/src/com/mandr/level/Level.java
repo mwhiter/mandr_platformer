@@ -132,7 +132,7 @@ public class Level {
 	//=========================================================================
 	
 	public void draw(float deltaTime, SpriteBatch batch) {
-		m_EntityManager.draw(batch);
+		m_EntityManager.draw(deltaTime, batch);
 	}
 	
 	// Step the level

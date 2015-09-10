@@ -163,6 +163,8 @@ public class Weapon {
 		
 		move.getVelocity().set(velocity);
 
+		// TODO This needs to be fixed.
+		
 		// Graphical stuff. Adjust sprite based on variables.
 		//RenderComponent render = (RenderComponent) projectile.getComponent(ComponentType.COMPONENT_RENDER);
 		//if(render != null) {

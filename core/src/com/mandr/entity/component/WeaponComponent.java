@@ -30,9 +30,16 @@ public class WeaponComponent extends Component {
 
 	@Override
 	public void update(float deltaTime) {
+		processMessages();
+		
 		if(getActiveWeapon() != null) {
 			getActiveWeapon().update();
 		}
+	}
+	
+	@Override
+	public void receiveMessage(ComponentMessage msg) {
+
 	}
 
 	@Override
