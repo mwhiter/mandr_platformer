@@ -67,8 +67,6 @@ public class GameScreen implements Screen {
 		previous = current;
 		lag += elapsed;
 		
-		System.out.println("New frame.");
-		
 		input.update();
 		
 		// TODO: input lag

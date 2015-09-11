@@ -1,4 +1,4 @@
-package com.mandr.graphics.anim;
+package com.mandr.loading;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.XmlReader;
+
+// Loads one animation
 
 public class AnimLoader {
 	// Data class to store needed variables for parsing.
@@ -24,15 +26,21 @@ public class AnimLoader {
 		XmlReader xml = new XmlReader();
 		AnimData data = new AnimData();
 		data.anims = new HashMap<String, Animation>();
+		System.out.print("Trying to load animation (" + file + ") ...");
 		try {
-			XmlReader.Element element = xml.parse(Gdx.files.internal("resources/anim/" + file));
+			XmlReader.Element element = xml.parse(Gdx.files.internal(file));
 			parseFileData(data, element.getChildByName("File"));
 			parseStates(data, element.getChildByName("States"));
+			
+
+			System.out.print(" Success! \n");
 			
 			return data.anims;
 		}
 		// If this fails, do not give any animations
 		catch(IOException ex) {
+			System.out.print(" Failed! \n");
+			
 			ex.printStackTrace();
 			return null;
 		}	

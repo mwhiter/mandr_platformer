@@ -109,11 +109,11 @@ public class Level {
 		}
 		
 		// The player needs to exists otherwise the game crashes.
-		Entity player = new Entity(m_StartPositions.get(0).x, m_StartPositions.get(0).y, Globals.getTexture(0), Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_PLAYER", "Entities")));
+		Entity player = new Entity(m_StartPositions.get(0).x, m_StartPositions.get(0).y, Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_PLAYER", "Entities")));
 		m_EntityManager.addEntity(player, true);
 		
 		// add a test item
-		//m_EntityManager.addEntity(new Entity(31, 2, Globals.getTexture(3), Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_WEAPON_SMG", "Entities"))), true);
+		m_EntityManager.addEntity(new Entity(31, 2, Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_WEAPON_PISTOL", "Entities"))), true);
 		
 		saveCheckpoint();
 	}

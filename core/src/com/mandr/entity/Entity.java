@@ -1,9 +1,8 @@
-package com.mandr.entity;
+ package com.mandr.entity;
 
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
@@ -18,7 +17,6 @@ import com.mandr.level.Tile;
 import com.mandr.util.AABB;
 import com.mandr.util.Constants;
 import com.mandr.util.Directions;
-import com.mandr.util.StringUtils;
 
 /** An entity with components. */
 public class Entity {	
@@ -45,7 +43,7 @@ public class Entity {
 	 * stats The stats of the entity
 	 * @throw IllegalArgumentException If stats is null
 	 * */
-	public Entity(float x, float y, Texture texture, EntityInfo stats) {
+	public Entity(float x, float y, EntityInfo stats) {
 		if(stats == null) throw new IllegalArgumentException("Stats cannot be null!");
 		
 		m_ComponentList = stats.getComponents();
@@ -64,7 +62,7 @@ public class Entity {
 		
 		// TODO animation should be loaded separately
 		// TODO this cannot possibly be done at object creation. Must load all this separate!!!!
-		if(hasComponent(ComponentType.COMPONENT_RENDER))	m_Components.put(ComponentType.COMPONENT_RENDER, new RenderComponent(this, "test_player.xml"));
+		if(hasComponent(ComponentType.COMPONENT_RENDER))	m_Components.put(ComponentType.COMPONENT_RENDER, new RenderComponent(this, stats.getAnimID()));
 		
 		// The following components need to have a move controller to function
 		if(hasComponent(ComponentType.COMPONENT_MOVE)) {
@@ -228,8 +226,9 @@ public class Entity {
 		
 		EntityState oldState = m_State;
 		if(oldState != newState) {
+			
 			// TODO: little debug thing to see which function called it
-			StringUtils.debugPrint("Changing state from " + oldState + " to " + newState + " " + Thread.currentThread().getStackTrace()[2]);
+			//StringUtils.debugPrint("Changing state from " + oldState + " to " + newState + " " + Thread.currentThread().getStackTrace()[2]);
 			
 			m_State = newState;
 

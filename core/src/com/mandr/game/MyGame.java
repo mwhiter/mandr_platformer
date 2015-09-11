@@ -3,7 +3,7 @@ package com.mandr.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.mandr.game.screens.LoadingScreen;
+import com.mandr.game.screens.MainMenuScreen;
 import com.mandr.database.DatabaseUtility;
 
 public class MyGame extends Game  {
@@ -14,7 +14,7 @@ public class MyGame extends Game  {
 		DatabaseUtility.initDatabase();
 		
 		// TODO: still highly incomplete, need to think of a good screen access system
-		setScreen(new LoadingScreen(this, "test_map.tmx"));
+		setScreen(new MainMenuScreen(this));
 	}
 
 	@Override
@@ -27,7 +27,6 @@ public class MyGame extends Game  {
 		// This way, when the application is paused for whatever reason, the deltaTime will remain a somewhat sane value.
 		//deltaTime = Math.min(deltaTime, 1 / 30.0f);
 		
-	
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		getScreen().render(deltaTime);
 	}

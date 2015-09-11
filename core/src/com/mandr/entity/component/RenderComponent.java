@@ -2,7 +2,6 @@ package com.mandr.entity.component;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,24 +11,27 @@ import com.badlogic.gdx.math.Vector2;
 import com.mandr.entity.Entity;
 import com.mandr.enums.AnimState;
 import com.mandr.enums.EntityState;
-import com.mandr.graphics.anim.AnimLoader;
+import com.mandr.game.Globals;
 import com.mandr.level.Tile;
 import com.mandr.util.Constants;
 
 public class RenderComponent extends Component {
+	private float m_Rotation;
+	
 	private TextureRegion m_CurrentFrame;
 	private AnimState m_AnimState;
-	float stateTime;
+	private float stateTime;
 	
 	// HashMap of animations. Each animation has a name.
 	HashMap<String, Animation> m_Animations;
 	
-	public RenderComponent(Entity entity, String animDef) {
+	public RenderComponent(Entity entity, int animID) {
 		super(entity);
 		
-		m_Animations = AnimLoader.parse(animDef);
+		m_Animations = Globals.getAnimInfo(animID);
 		m_AnimState = AnimState.ANIM_STATE_IDLE;
 		stateTime = 0.0f;
+		m_Rotation = 0.0f;
 	}
 	
 	@Override
@@ -45,13 +47,13 @@ public class RenderComponent extends Component {
 		// TODO: This is too simple. Animation states are more complicated than this.
 		switch(msg) {
 		case MESSAGE_MOVE_LEFT:
-			setAnimState(AnimState.ANIM_STATE_MOVE_LEFT);
+			m_AnimState = AnimState.ANIM_STATE_MOVE_LEFT;
 			break;
 		case MESSAGE_MOVE_RIGHT:
-			setAnimState(AnimState.ANIM_STATE_MOVE_RIGHT);
+			m_AnimState = AnimState.ANIM_STATE_MOVE_RIGHT;
 			break;
 		case MESSAGE_MOVE_STOP:
-			setAnimState(AnimState.ANIM_STATE_IDLE);
+			m_AnimState = AnimState.ANIM_STATE_IDLE;
 			break;
 		default: break;
 		}
@@ -75,7 +77,8 @@ public class RenderComponent extends Component {
 
 	/** Looks at the animation state, and returns the correct animation 
 	 * @return The current animation */
-	private Animation getAnim() {	
+	private Animation getAnim() {
+		if(m_Animations == null) return null;
 		return m_Animations.get(m_AnimState.name);
 	}
 	
@@ -83,12 +86,6 @@ public class RenderComponent extends Component {
 		return m_AnimState;
 	}
 	
-	// TODO Do we want this function? I don't think so. Receive some sort of signal or message, and then update the anim state accordingly.
-	public void setAnimState(AnimState state) {
-		m_AnimState = state;
-	}
-	
-	// TODO: Render animation
 	public void draw(float delta, SpriteBatch batch) {
 		float scale = 1 / (float) Constants.NUM_PIXELS_PER_TILE;
 		
@@ -98,6 +95,7 @@ public class RenderComponent extends Component {
 		Animation anim = getAnim();
 		if(anim == null) {
 			System.out.println("WARNING! Entity animation is null! What do we do?");
+			return;
 		}
 		
 		m_CurrentFrame = anim.getKeyFrame(stateTime, true);
@@ -116,7 +114,7 @@ public class RenderComponent extends Component {
 		// OriginX and OriginY should be width/2 and height/2.
 		
 		//batch.draw(m_CurrentFrame, 2,21, spriteWidth,spriteHeight);
-		batch.draw(m_CurrentFrame, x, y, spriteWidth/2, spriteHeight/2, spriteWidth, spriteHeight, 1, 1, 0);
+		batch.draw(m_CurrentFrame, x, y, spriteWidth/2, spriteHeight/2, spriteWidth, spriteHeight, 1, 1, m_Rotation);
 	}
 	
 	public void draw(ShapeRenderer render) {
@@ -125,5 +123,18 @@ public class RenderComponent extends Component {
 		
 		render.setColor(Color.WHITE);
 		render.rect(position.x, position.y, size.x, size.y);
+	}
+	
+	public float getRotation() {
+		return m_Rotation;
+	}
+	
+	public void setRotation(float degrees) {
+		while(degrees >= 360.0f)
+			degrees -= 360.0f;
+		while(degrees < 0.0f)
+			degrees += 360.0f;
+		
+		m_Rotation = degrees;
 	}
 }

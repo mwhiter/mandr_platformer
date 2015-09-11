@@ -19,6 +19,7 @@ public class EntityInfo extends Info {
 	private boolean	dieOffScreen; 			// Does the entity die when it goes offscreen?
 	private ItemInfo itemInfo;				// Item that it's holding
 	private int 	components;
+	private int 	animID;
 	
 	@Override
 	public boolean cacheRow(DatabaseRow row) {
@@ -39,6 +40,8 @@ public class EntityInfo extends Info {
         dieOffScreen		= row.getBool("DiesOffScreen");
         
         itemInfo			= Globals.getItemInfo(DatabaseUtility.getIDFromTypeName(row.getText("ItemType"), "Items"));
+        
+        animID				= DatabaseUtility.getIDFromTypeName(row.getText("AnimType"), "Animations");
         
         // Components are built dynamically based on entity specs
         components = 0;
@@ -108,5 +111,9 @@ public class EntityInfo extends Info {
 
 	public float getMaxFallSpeed() {
 		return maxFallSpeed;
-	};
 	}
+	
+	public int getAnimID() {
+		return animID;
+	}
+}

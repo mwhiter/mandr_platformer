@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.mandr.game.Globals;
 import com.mandr.info.*;
+import com.mandr.loading.AnimLoader;
 
 public class DatabaseUtility {
 	private static Connection m_Connection = null;
@@ -14,7 +16,7 @@ public class DatabaseUtility {
 	
 	public static boolean initDatabase() {
 		boolean success;
-		success = load("database");
+		success = load("database.db");
 		if(success) {
 			success = loadDatabase();
 			success = fetchDatabase();
@@ -43,6 +45,7 @@ public class DatabaseUtility {
 	 * */
 	private static boolean loadDatabase() {
 		boolean success;
+		success = loadTable("Animations");
 		success = loadTable("Weapons");
 		success = loadTable("Items");
 		success = loadTable("Entities");
@@ -106,6 +109,8 @@ public class DatabaseUtility {
 	 * @return The ID of the type name, or -1 if none exists.
 	 * */
 	public static int getIDFromTypeName(String typeName, String tableName) {
+		if(typeName == null) return -1;
+		
 		ArrayList<DatabaseRow> rows = m_TableMap.get(tableName);
 		if(rows == null) return -1;
 		
@@ -123,6 +128,7 @@ public class DatabaseUtility {
 	 * @return Whether or not fetching was successful. */
 	private static boolean fetchDatabase() {
 		boolean success;
+		success = cacheAnimationTable(Globals.getAnimInfos(), "Animations");
 		success = cacheItemTable(Globals.getItemInfos(), "Items");
 		success = cacheWeaponTable(Globals.getWeaponStats(), "Weapons");
 		success = cacheEntityTable(Globals.getEntityInfos(), "Entities");
@@ -132,6 +138,25 @@ public class DatabaseUtility {
 	// I'd rather avoid having to do ugly factory instantiation for generic types.
 	// I'd like to do T info = new T();. But we can't do that in Java (praise C++!) so I'm going to just have a bunch of overriden methods
 	// Terrible hack, but unavoidable.
+	
+	private static boolean cacheAnimationTable(ArrayList<HashMap<String, Animation>> collection, String tableName) {
+		ArrayList<DatabaseRow> table = getTable(tableName);
+		if(table != null) {
+			for(DatabaseRow row : table) {
+				AnimInfo info = new AnimInfo();
+				info.cacheRow(row);
+				
+				// TODO Make this consistent with everything else!
+				HashMap<String, Animation> anim = AnimLoader.parse(info.getFilePath());
+				if(anim != null)
+					collection.add(anim);
+			}
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	
 	private static boolean cacheWeaponTable(ArrayList<WeaponInfo> collection, String tableName) {
 		ArrayList<DatabaseRow> table = getTable(tableName);

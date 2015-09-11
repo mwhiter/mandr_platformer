@@ -144,7 +144,7 @@ public class Weapon {
 		if(projInfo == null) return;
 		
 		// TODO: Projectile stats!
-		Entity projectile = new Entity(m_ProjectileSpawnPosition.x, m_ProjectileSpawnPosition.y, Globals.getTexture(2), projInfo);
+		Entity projectile = new Entity(m_ProjectileSpawnPosition.x, m_ProjectileSpawnPosition.y, projInfo);
 		MoveComponent move = (MoveComponent) projectile.getComponent(ComponentType.COMPONENT_MOVE);
 		if(move == null) {
 			StringUtils.debugPrint("ERROR: Move component null for projectile!");
@@ -163,14 +163,13 @@ public class Weapon {
 		
 		move.getVelocity().set(velocity);
 
-		// TODO This needs to be fixed.
+		// TODO Don't know if this is correct!
 		
 		// Graphical stuff. Adjust sprite based on variables.
-		//RenderComponent render = (RenderComponent) projectile.getComponent(ComponentType.COMPONENT_RENDER);
-		//if(render != null) {
-		//	render.getSprite().setOrigin(render.getSprite().getWidth()/2, render.getSprite().getHeight()/2);
-		//	render.getSprite().setRotation(velocity.angle());
-		//}
+		RenderComponent render = (RenderComponent) projectile.getComponent(ComponentType.COMPONENT_RENDER);
+		if(render != null) {
+			render.setRotation(velocity.angle());
+		}
 		
 		// Spawn the entity.
 		GameScreen.getLevel().getEntityManager().addEntity(projectile, false);
