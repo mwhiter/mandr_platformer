@@ -2,12 +2,8 @@ package com.mandr.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -31,40 +27,61 @@ public class MainMenuScreen implements Screen {
 	}
 	
 	public void create() {
+		
+		// TODO figure out a good way to define these buttons. Not particularly thrilled with how they are done now
+		
 		m_Stage = new Stage();
 		Gdx.input.setInputProcessor(m_Stage);
 	
-		// TODO define in JSON file?
-		m_Skin = new Skin();
-		
-		Pixmap pixmap = new Pixmap(100, 100, Format.RGBA8888);
-		pixmap.setColor(Color.GREEN);
-		pixmap.fill();
-		
-		m_Skin.add("white", new Texture(pixmap));
-		
 		BitmapFont font = new BitmapFont();
-		m_Skin.add("default", font);
+		m_Skin = new Skin();		
+		m_Skin.addRegions(new TextureAtlas(Gdx.files.internal("resources/ui/buttons/uibuttons.pack")));
 		
 		TextButtonStyle style = new TextButtonStyle();
-		style.up = m_Skin.newDrawable("white", Color.DARK_GRAY);
-		style.down = m_Skin.newDrawable("white", Color.DARK_GRAY);
-		style.checked = m_Skin.newDrawable("white", Color.DARK_GRAY);
-		style.over = m_Skin.newDrawable("white", Color.DARK_GRAY);
-		style.font = m_Skin.getFont("default");
+		style.font = font;
+		style.up = m_Skin.getDrawable("button_test");
+		style.down = m_Skin.getDrawable("button_test");
+		style.checked = m_Skin.getDrawable("button_test");
+		style.over = m_Skin.getDrawable("button_test");
 		
-		m_Skin.add("default", style);
-		
-		TextButton button = new TextButton("PLAY", style);
-		button.addListener(new ChangeListener() {
-
+		// TODO need some way to query screen width
+		int screenWidth = 1024;
+		// Play button
+		addButton(((screenWidth * 33 ) / 100) - 100,200,"PLAY", style, new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
 				loadLevel("test_map.tmx");
 			}
-			
 		});
-		button.setPosition(200, 200);
+		
+		// Options button
+		addButton(((screenWidth * 66) / 100) - 100,200,"Options (NYI)", style, new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				// Not functional.
+			}
+		});
+		
+		TextButtonStyle exitstyle = new TextButtonStyle();
+		exitstyle.font = font;
+		exitstyle.up = m_Skin.getDrawable("button_exit_test");
+		exitstyle.down = m_Skin.getDrawable("button_exit_test");
+		exitstyle.checked = m_Skin.getDrawable("button_exit_test");
+		exitstyle.over = m_Skin.getDrawable("button_exit_test");
+		
+		// Exit button
+		addButton(screenWidth - 200,0,"EXIT", exitstyle, new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				System.exit(0);
+			}
+		});
+	}
+	
+	private void addButton(float x, float y, String text, TextButtonStyle style, ChangeListener listener) {
+		TextButton button = new TextButton(text, style);
+		button.addListener(listener);
+		button.setPosition(x, y);
 		m_Stage.addActor(button);
 	}
 	
