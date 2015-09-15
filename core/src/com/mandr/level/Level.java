@@ -96,16 +96,18 @@ public class Level {
 		for(int i = 0; i < objects.getCount(); i++) {
 			object = objects.get(i);
 			String type = (String) object.getProperties().get("type");
+			
 			System.out.println(i + ": " + type);
+			
 			if(type.equalsIgnoreCase("StartPosition")) {
 				m_StartPositions.add(new Vector2((Float)object.getProperties().get("x") / 16.0f, (Float)object.getProperties().get("y") / 16.0f));
 			}
 		}
 		
 		// If no player starts were initialized, spawn the player at 3,1
-		if(m_StartPositions.size() == 0) {
-			m_StartPositions.add(new Vector2(3,1));
-			System.out.println("WARNING! No player starts initialized! Spawning player at 3,1");
+		if(m_StartPositions.isEmpty()) {
+			m_StartPositions.add(new Vector2());
+			System.out.println("WARNING! No player starts initialized! Spawning player at 0,0");
 		}
 		
 		// The player needs to exists otherwise the game crashes.

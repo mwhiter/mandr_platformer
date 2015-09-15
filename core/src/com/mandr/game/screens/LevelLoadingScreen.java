@@ -4,12 +4,12 @@ import com.badlogic.gdx.Screen;
 import com.mandr.game.MyGame;
 import com.mandr.level.Level;
 
-public class LoadingScreen implements Screen {
+public class LevelLoadingScreen implements Screen {
 	private MyGame m_Game;
 	
 	private Level m_LoadingLevel;
 	private String m_LevelName;
-	public LoadingScreen(MyGame game, String levelName) {
+	public LevelLoadingScreen(MyGame game, String levelName) {
 		m_Game = game;
 		m_LoadingLevel = new Level();
 		m_LevelName = levelName;
@@ -26,20 +26,26 @@ public class LoadingScreen implements Screen {
 	@Override
 	public void render(float delta) {
 		if(m_LoadingLevel.isLoaded()) {
-			m_Game.setScreen(new GameScreen(m_Game, m_LoadingLevel));
+			startLevel();
 		}
 		else {
 			try {
+				// TODO I am thinking of having a LevelLoader class, which accepts a level and populates it.
+				System.out.print("Loading level... ");
 				m_LoadingLevel.loadMap(m_LevelName);
+				System.out.print("Success!\n");
 			}
 			// TODO: Don't exactly know what I'm doing here yet
 			catch (Exception e) {
-				System.out.println("Failed to load level: " + e.getMessage());
-				e.printStackTrace();
+				m_Game.setScreen(new MainMenuScreen(m_Game, 0));
 				this.dispose();
-				System.exit(0);
 			}
 		}
+	}
+	
+	private void startLevel() {
+		m_Game.setScreen(new GameScreen(m_Game, m_LoadingLevel));
+		this.dispose();
 	}
 
 	@Override

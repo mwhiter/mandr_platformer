@@ -22,8 +22,19 @@ public class MainMenuScreen implements Screen {
 	private MyGame m_Game;
 	
 	public MainMenuScreen(MyGame game) {
+		this(game, -1);	// TODO Some concept of error code, for now -1 represents "no error"
+	}
+	
+	// TODO: errcode 0 means level failed to load (for now)
+	public MainMenuScreen(MyGame game, int errcode) {
 		m_Game = game;
 		create();
+		
+		switch(errcode) {
+		// Level failure
+		case 0: System.out.println("Failed to load level.");
+		default: break;
+		}
 	}
 	
 	public void create() {
@@ -87,7 +98,7 @@ public class MainMenuScreen implements Screen {
 	
 	private void loadLevel(String level) {
 		// TODO set screen on button press
-		m_Game.setScreen(new LoadingScreen(m_Game, level));
+		m_Game.setScreen(new LevelLoadingScreen(m_Game, level));
 		this.dispose();
 	}
 	
