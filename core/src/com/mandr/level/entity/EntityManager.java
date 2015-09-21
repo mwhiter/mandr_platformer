@@ -12,6 +12,8 @@ import com.mandr.game.screens.GameScreen;
 
 public class EntityManager {
 	
+	private Entity m_Player;
+	
 	private EntityCollider m_EntityCollider;
 	private LinkedList<Entity> m_Entities;
 	private ArrayList<Entity> m_ActiveEntities;	// entities that are active (near the screenBounds)
@@ -121,8 +123,13 @@ public class EntityManager {
 		return m_ActiveEntities;
 	}
 	
+	public void setPlayer(Entity ent) {
+		if(ent != null)
+			m_Player = ent;
+	}
+	
 	public Entity getPlayer() {
-		return m_Entities.get(0);
+		return m_Player;
 	}
 
 	public EntityCollider getEntityCollider() {

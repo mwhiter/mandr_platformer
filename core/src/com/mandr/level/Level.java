@@ -90,6 +90,10 @@ public class Level {
 	private void initEntities() {
 		System.out.println("Initializing entities");
 		
+		// Temporary array of entities that are processed first and then added into the level
+		// TODO: I'd rather just store a list of entities (x,y), and create them when the player gets near
+		ArrayList<Entity> ents = new ArrayList<Entity>();
+		
 		MapLayer objectLayer = getObjectLayer();
 		MapObjects objects = objectLayer.getObjects();
 		MapObject object;
@@ -97,10 +101,17 @@ public class Level {
 			object = objects.get(i);
 			String type = (String) object.getProperties().get("type");
 			
+			float x = (Float) object.getProperties().get("x") / 16.0f;
+			float y = (Float) object.getProperties().get("y") / 16.0f;
+			
 			System.out.println(i + ": " + type);
 			
 			if(type.equalsIgnoreCase("StartPosition")) {
 				m_StartPositions.add(new Vector2((Float)object.getProperties().get("x") / 16.0f, (Float)object.getProperties().get("y") / 16.0f));
+			}
+			// TODO: Obviously, not good. I want to come up with a much better system for adding entities into the game. This is a bigger project than I thought it would be.
+			else if(type.equalsIgnoreCase("ITEM_PISTOL")) {
+				ents.add(new Entity(x, y, Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_WEAPON_PISTOL", "Entities"))));
 			}
 		}
 		
@@ -113,9 +124,11 @@ public class Level {
 		// The player needs to exists otherwise the game crashes.
 		Entity player = new Entity(m_StartPositions.get(0).x, m_StartPositions.get(0).y, Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_PLAYER", "Entities")));
 		m_EntityManager.addEntity(player, true);
+		m_EntityManager.setPlayer(player);
 		
-		// add a test item
-		m_EntityManager.addEntity(new Entity(31, 2, Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_WEAPON_PISTOL", "Entities"))), true);
+		for(int i=0; i < ents.size(); i++) {
+			m_EntityManager.addEntity(ents.get(i), false);
+		}
 		
 		saveCheckpoint();
 	}

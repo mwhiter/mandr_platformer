@@ -80,6 +80,8 @@ public class Tile {
 			return;
 		}
 		
+		// TODO: Disabling slopes for now
+		/*
 		// Is this a slope tile?
 		property = tile.getProperties().get("slope");
 		if(property != null) {
@@ -105,6 +107,7 @@ public class Tile {
 			}
 			return;
 		}
+		*/
 		
 		System.out.println(this + " " + getTileType());
 	}
