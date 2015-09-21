@@ -7,6 +7,7 @@ import java.util.HashMap;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.mandr.game.Globals;
+import com.mandr.game.ProjectileInfo;
 import com.mandr.info.*;
 import com.mandr.loading.AnimLoader;
 
@@ -46,9 +47,10 @@ public class DatabaseUtility {
 	private static boolean loadDatabase() {
 		boolean success;
 		success = loadTable("Animations");
-		success = loadTable("Weapons");
-		success = loadTable("Items");
-		success = loadTable("Entities");
+		success = loadTable("Weapon");
+		success = loadTable("Actor");
+		success = loadTable("Item");
+		success = loadTable("Projectile");
 		return success;
 	}
 	
@@ -129,9 +131,10 @@ public class DatabaseUtility {
 	private static boolean fetchDatabase() {
 		boolean success;
 		success = cacheAnimationTable(Globals.getAnimInfos(), "Animations");
-		success = cacheItemTable(Globals.getItemInfos(), "Items");
-		success = cacheWeaponTable(Globals.getWeaponStats(), "Weapons");
-		success = cacheEntityTable(Globals.getEntityInfos(), "Entities");
+		success = cacheActorTable(Globals.getActorInfos(), "Actor");
+		success = cacheItemTable(Globals.getItemInfos(), "Item");
+		success = cacheProjectileTable(Globals.getProjectileInfos(), "Projectile");
+		success = cacheWeaponTable(Globals.getWeaponInfos(), "Weapon");
 		return success;
 	}
 	
@@ -158,11 +161,11 @@ public class DatabaseUtility {
 		}
 	}
 	
-	private static boolean cacheWeaponTable(ArrayList<WeaponInfo> collection, String tableName) {
+	private static boolean cacheActorTable(ArrayList<ActorInfo> collection, String tableName) {
 		ArrayList<DatabaseRow> table = getTable(tableName);
 		if(table != null) {
 			for(DatabaseRow row : table) {
-				WeaponInfo info = new WeaponInfo();
+				ActorInfo info = new ActorInfo();
 				info.cacheRow(row);
 				collection.add(info);
 			}
@@ -188,11 +191,26 @@ public class DatabaseUtility {
 		}
 	}
 	
-	private static boolean cacheEntityTable(ArrayList<EntityInfo> collection, String tableName) {
+	private static boolean cacheProjectileTable(ArrayList<ProjectileInfo> collection, String tableName) {
 		ArrayList<DatabaseRow> table = getTable(tableName);
 		if(table != null) {
 			for(DatabaseRow row : table) {
-				EntityInfo info = new EntityInfo();
+				ProjectileInfo info = new ProjectileInfo();
+				info.cacheRow(row);
+				collection.add(info);
+			}
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private static boolean cacheWeaponTable(ArrayList<WeaponInfo> collection, String tableName) {
+		ArrayList<DatabaseRow> table = getTable(tableName);
+		if(table != null) {
+			for(DatabaseRow row : table) {
+				WeaponInfo info = new WeaponInfo();
 				info.cacheRow(row);
 				collection.add(info);
 			}

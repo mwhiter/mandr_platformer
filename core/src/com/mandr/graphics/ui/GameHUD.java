@@ -77,7 +77,7 @@ public class GameHUD {
 		String camera = "Camera: " + GameScreen.getRenderer().getCamera().position;
 
 		String look = "Look: " + lookVector.angle();
-		String gameEntityCount = "Entity count: " + Integer.toString(GameScreen.getLevel().getEntityManager().getNumActiveEntities()) + "/" + Integer.toString(GameScreen.getLevel().getEntityManager().getNumEntities());
+		String gameEntityCount = "Entity count: " + Integer.toString(GameScreen.getLevel().getEntityManager().getNumActiveEntities()) + " (Active) / " + Integer.toString(GameScreen.getLevel().getEntityManager().getNumEntities()) + "(Total)";
 		String gameTime = "Game Time: " + StringUtils.timeString(Globals.getGameTime());
 		
 		String weaponReload = "";

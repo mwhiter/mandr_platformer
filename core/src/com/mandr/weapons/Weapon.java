@@ -2,19 +2,17 @@ package com.mandr.weapons;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.mandr.database.DatabaseUtility;
 import com.mandr.entity.Entity;
 import com.mandr.entity.component.ComponentType;
 import com.mandr.entity.component.MoveComponent;
 import com.mandr.entity.component.RenderComponent;
 import com.mandr.entity.component.WeaponComponent;
 import com.mandr.game.Globals;
+import com.mandr.game.ProjectileInfo;
 import com.mandr.game.screens.GameScreen;
-import com.mandr.info.EntityInfo;
 import com.mandr.info.WeaponInfo;
 import com.mandr.util.AABB;
 import com.mandr.util.Constants;
-import com.mandr.util.StringUtils;
 
 public class Weapon {
 	public enum WeaponType {
@@ -140,16 +138,12 @@ public class Weapon {
 	
 	// TODO: Test function to spawn projectile. Figure out a better way to implement
 	private void spawnProjectile() {
-		EntityInfo projInfo = Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_PROJECTILE", "Entities"));
+		ProjectileInfo projInfo = m_WeaponStats.getProjectileInfo();
 		if(projInfo == null) return;
 		
-		// TODO: Projectile stats!
-		Entity projectile = new Entity(m_ProjectileSpawnPosition.x, m_ProjectileSpawnPosition.y, projInfo);
+		// Spawn the entity.
+		Entity projectile = GameScreen.getLevel().getEntityManager().addProjectile(m_ProjectileSpawnPosition.x, m_ProjectileSpawnPosition.y, projInfo, false);
 		MoveComponent move = (MoveComponent) projectile.getComponent(ComponentType.COMPONENT_MOVE);
-		if(move == null) {
-			StringUtils.debugPrint("ERROR: Move component null for projectile!");
-			return;
-		}
 		
 		projectile.setFriendly(m_Entity.isFriendly());
 		
@@ -164,15 +158,9 @@ public class Weapon {
 		move.getVelocity().set(velocity);
 
 		// TODO Don't know if this is correct!
-		
 		// Graphical stuff. Adjust sprite based on variables.
 		RenderComponent render = (RenderComponent) projectile.getComponent(ComponentType.COMPONENT_RENDER);
-		if(render != null) {
-			render.setRotation(velocity.angle());
-		}
-		
-		// Spawn the entity.
-		GameScreen.getLevel().getEntityManager().addEntity(projectile, false);
+		render.setRotation(velocity.angle());
 	}
 	
 	//=========================================================================

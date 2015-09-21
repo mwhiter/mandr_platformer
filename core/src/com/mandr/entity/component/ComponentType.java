@@ -11,6 +11,9 @@ public enum ComponentType {
 	COMPONENT_PROJECTILE(1 << 7),	// Allows entity to behave like a projectile.
 	COMPONENT_ITEM(1 << 8),			// Allows entity to behave like an item
 	
+	COMPONENT_ITEM_LIST(COMPONENT_RENDER.getFlag() | COMPONENT_MOVE.getFlag() | COMPONENT_ITEM.getFlag()),
+	COMPONENT_PROJECTILE_LIST(COMPONENT_RENDER.getFlag() | COMPONENT_MOVE.getFlag() | COMPONENT_PROJECTILE.getFlag()),
+	
 	// Component Presets
 	COMPONENT_PLAYER(
 			COMPONENT_RENDER.getFlag() 			|
@@ -20,9 +23,7 @@ public enum ComponentType {
 			COMPONENT_LADDER.getFlag()			|
 			COMPONENT_WEAPON.getFlag()			|
 			COMPONENT_HEALTH.getFlag()			
-	),
-	
-	COMPONENT_BULLET( COMPONENT_RENDER.getFlag() | COMPONENT_MOVE.getFlag() | COMPONENT_PROJECTILE.getFlag());
+	);
 	
 	private int flag;
 	

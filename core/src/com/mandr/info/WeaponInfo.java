@@ -1,10 +1,14 @@
 package com.mandr.info;
 
 import com.mandr.database.DatabaseRow;
+import com.mandr.database.DatabaseUtility;
+import com.mandr.game.Globals;
+import com.mandr.game.ProjectileInfo;
 import com.mandr.weapons.Weapon.WeaponType;
 
 public class WeaponInfo extends Info {
 	private int ms_per_round;		// millisec per round
+	
 	
 	private String name;
 	private WeaponType fireMode;
@@ -16,6 +20,8 @@ public class WeaponInfo extends Info {
 	private int max_ammo;			// Maximum ammunition
 	private int mag_size;			// Size of the magazine
 
+	private ProjectileInfo projInfo;
+	
 	@Override
 	public boolean cacheRow(DatabaseRow row) {
 		if(row == null) return false;
@@ -29,6 +35,7 @@ public class WeaponInfo extends Info {
 		cof = 				row.getFloat("ConeOfFire");
 		bulletVelocity = 	row.getFloat("Velocity");
 		damage = 			row.getInt("Damage");
+		projInfo = 			Globals.getProjectileInfo(DatabaseUtility.getIDFromTypeName(row.getText("ProjectileType"), "Projectile"));
 		
 		if(max_ammo > 0) mag_size = Math.min(max_ammo, mag_size);
 		
@@ -80,5 +87,9 @@ public class WeaponInfo extends Info {
 	
 	public int getFireSpeed() {
 		return ms_per_round;
+	}
+	
+	public ProjectileInfo getProjectileInfo() {
+		return projInfo;
 	}
 }

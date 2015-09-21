@@ -260,8 +260,11 @@ public class MoveComponent extends Component {
 		float speed = m_Velocity.y;
 		speed = applyGravity(speed);
 		speed = slopeDescend(speed);
-		if(speed < m_Entity.getStats().getMaxFallSpeed())
-			speed = m_Entity.getStats().getMaxFallSpeed();
+		if(m_Entity.isActor()) {
+			// TODO This isn't right ?
+			if(speed < m_Entity.getActorInfo().getMaxFallSpeed())
+				speed = m_Entity.getActorInfo().getMaxFallSpeed();
+		}
 		return speed;
 	}
 	

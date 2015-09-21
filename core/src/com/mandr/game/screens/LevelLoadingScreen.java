@@ -38,6 +38,7 @@ public class LevelLoadingScreen implements Screen {
 			// TODO: Don't exactly know what I'm doing here yet
 			catch (Exception e) {
 				m_Game.setScreen(new MainMenuScreen(m_Game, 0));
+				e.printStackTrace();
 				this.dispose();
 			}
 		}

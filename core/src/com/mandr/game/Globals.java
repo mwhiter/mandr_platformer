@@ -21,14 +21,15 @@ public class Globals {
 		m_GameTime += gameTime;
 	}
 
-	private static ArrayList<WeaponInfo> m_WeaponStats = new ArrayList<WeaponInfo>();
-	private static ArrayList<ItemInfo> m_ItemStats = new ArrayList<ItemInfo>();
-	private static ArrayList<EntityInfo> m_EntityInfos = new ArrayList<EntityInfo>();
+	private static ArrayList<ActorInfo> m_ActorInfos 			= new ArrayList<ActorInfo>();
+	private static ArrayList<ItemInfo> m_ItemStats 				= new ArrayList<ItemInfo>();
+	private static ArrayList<ProjectileInfo> m_ProjectileInfos 	= new ArrayList<ProjectileInfo>();
+	private static ArrayList<WeaponInfo> m_WeaponInfos 			= new ArrayList<WeaponInfo>();
 	
-	public static ArrayList<WeaponInfo> getWeaponStats() { return m_WeaponStats; }
-	public static WeaponInfo getWeaponStat(int id) {
-		if(id < 0 || id >= m_WeaponStats.size()) return null;
-		return m_WeaponStats.get(id);
+	public static ArrayList<WeaponInfo> getWeaponInfos() { return m_WeaponInfos; }
+	public static WeaponInfo getWeaponInfo(int id) {
+		if(id < 0 || id >= m_WeaponInfos.size()) return null;
+		return m_WeaponInfos.get(id);
 	}
 
 	public static ArrayList<ItemInfo> getItemInfos() { return m_ItemStats; }
@@ -37,10 +38,21 @@ public class Globals {
 		return m_ItemStats.get(id);
 	}
 	
-	public static ArrayList<EntityInfo> getEntityInfos() { return m_EntityInfos; }
-	public static EntityInfo getEntityInfo(int id) {
-		if(id < 0 || id >= m_EntityInfos.size()) return null;
-		return m_EntityInfos.get(id);
+	public static ArrayList<ActorInfo> getActorInfos() { return m_ActorInfos; }
+	public static ActorInfo getActorInfo(int id) {
+		if(id < 0 || id >= m_ActorInfos.size()) return null;
+		return m_ActorInfos.get(id);
+	}
+
+	public static ArrayList<ProjectileInfo> getProjectileInfos() { return m_ProjectileInfos; }
+	public static ProjectileInfo getProjectileInfo(int id) {
+		if(id < 0 || id >= m_ProjectileInfos.size()) return null;
+		return m_ProjectileInfos.get(id);
+	}
+	
+	public static Object getProjectileStats() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	// Animations
@@ -70,7 +82,7 @@ public class Globals {
 	
 	// TODO Incorrect right now. Need some way to index the animation infos like the other database stuff. Should they be put into the database?
 	public static HashMap<String, Animation> getAnimInfo(int id) {
-		if(id < 0 || id >= m_EntityInfos.size()) return null;
+		if(id < 0 || id >= m_AnimInfos.size()) return null;
 		return m_AnimInfos.get(id);
 	}
 }

@@ -6,12 +6,13 @@ import java.util.LinkedList;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mandr.entity.Entity;
-//import com.mandr.entity.unused.DynamicEntity;
-//import com.mandr.entity.unused.Player;
+import com.mandr.game.ProjectileInfo;
 import com.mandr.game.screens.GameScreen;
+import com.mandr.info.ActorInfo;
+import com.mandr.info.ItemInfo;
 
 public class EntityManager {
-	
+	private static int entity_id;
 	private Entity m_Player;
 	
 	private EntityCollider m_EntityCollider;
@@ -51,7 +52,7 @@ public class EntityManager {
 		}
 		
 		// Update active entities
-		for(Entity ent : m_ActiveEntities) {
+		for(Entity ent : m_Entities) {
 			ent.update(deltaTime);
 		}
 		
@@ -92,14 +93,47 @@ public class EntityManager {
 		m_EntityCollider.draw(render);
 	}
 	
-	/** Adds an entity to the entity manager. 
-	 * @param The entity to add
-	 * @param Should be force this entity to be added right away? */
-	public void addEntity(Entity ent, boolean force) {
+	/** Adds an actor to the entity manager. 
+	 * @param x the x-coord
+	 * @param y the y-coord
+	 * @param info the info
+	 * @param force Should be force this entity to be added right away? */
+	public Entity addActor(float x, float y, ActorInfo info, boolean force) {
+		Entity entity = new Entity(entity_id++, x,y,info);
 		if(force)
-			m_Entities.add(ent);
+			m_Entities.add(entity);
 		else
-			m_AddEntities.add(ent);
+			m_AddEntities.add(entity);
+		
+		return entity;
+	}
+	
+	/** Adds an item to the entity manager. 
+	 * @param x the x-coord
+	 * @param y the y-coord
+	 * @param info the info
+	 * @param force Should be force this entity to be added right away? */
+	public Entity addItem(float x, float y, ItemInfo info, boolean force) {
+		Entity entity = new Entity(entity_id++, x,y,info);
+		if(force)
+			m_Entities.add(entity);
+		else
+			m_AddEntities.add(entity);
+		return entity;
+	}
+	
+	/** Adds an projectile to the entity manager.
+	 * @param x the x-coord
+	 * @param y the y-coord 
+	 * @param info the info
+	 * @param force Should be force this entity to be added right away? */
+	public Entity addProjectile(float x, float y, ProjectileInfo info, boolean force) {
+		Entity entity = new Entity(entity_id++, x,y,info);
+		if(force)
+			m_Entities.add(entity);
+		else
+			m_AddEntities.add(entity);
+		return entity;
 	}
 	
 	public void removeEntity(Entity ent) {

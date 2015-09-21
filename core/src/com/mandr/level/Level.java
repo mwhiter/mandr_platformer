@@ -90,28 +90,41 @@ public class Level {
 	private void initEntities() {
 		System.out.println("Initializing entities");
 		
-		// Temporary array of entities that are processed first and then added into the level
-		// TODO: I'd rather just store a list of entities (x,y), and create them when the player gets near
-		ArrayList<Entity> ents = new ArrayList<Entity>();
-		
 		MapLayer objectLayer = getObjectLayer();
 		MapObjects objects = objectLayer.getObjects();
 		MapObject object;
 		for(int i = 0; i < objects.getCount(); i++) {
 			object = objects.get(i);
 			String type = (String) object.getProperties().get("type");
+			if(type.isEmpty()) continue;
 			
-			float x = (Float) object.getProperties().get("x") / 16.0f;
-			float y = (Float) object.getProperties().get("y") / 16.0f;
+			float x = (Float) object.getProperties().get("x");
+			float y = (Float) object.getProperties().get("y");
 			
-			System.out.println(i + ": " + type);
+			x /= 16.0f;
+			y /= 16.0f;
+			
+			System.out.println(i + ": " + type + " " + x + " " + y);
 			
 			if(type.equalsIgnoreCase("StartPosition")) {
-				m_StartPositions.add(new Vector2((Float)object.getProperties().get("x") / 16.0f, (Float)object.getProperties().get("y") / 16.0f));
+				m_StartPositions.add(new Vector2(x, y));
 			}
-			// TODO: Obviously, not good. I want to come up with a much better system for adding entities into the game. This is a bigger project than I thought it would be.
-			else if(type.equalsIgnoreCase("ITEM_PISTOL")) {
-				ents.add(new Entity(x, y, Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_WEAPON_PISTOL", "Entities"))));
+			else {
+				// Objects should be in <type>_<id> format. This allows me to figure out what object to construct.
+				// TODO might want to be in a function or separate class for readability sake.
+				int underscore = type.indexOf("_");
+				String typeName = type.substring(0, underscore);
+				int id = Integer.parseInt(type.substring(underscore+1));
+				if(typeName.equalsIgnoreCase("Actor")) {
+					m_EntityManager.addActor(x, y, Globals.getActorInfo(id), false);
+				}
+				else if(typeName.equalsIgnoreCase("Item")) {
+					m_EntityManager.addItem(x, y, Globals.getItemInfo(id), false);
+				}
+				else {
+					System.out.println("Error! Unknown type name for map object. Skipping.");
+					continue;
+				}
 			}
 		}
 		
@@ -122,13 +135,8 @@ public class Level {
 		}
 		
 		// The player needs to exists otherwise the game crashes.
-		Entity player = new Entity(m_StartPositions.get(0).x, m_StartPositions.get(0).y, Globals.getEntityInfo(DatabaseUtility.getIDFromTypeName("ENTITY_PLAYER", "Entities")));
-		m_EntityManager.addEntity(player, true);
+		Entity player = m_EntityManager.addActor(m_StartPositions.get(0).x, m_StartPositions.get(0).y, Globals.getActorInfo(DatabaseUtility.getIDFromTypeName("ACTOR_PLAYER", "Actor")), true);
 		m_EntityManager.setPlayer(player);
-		
-		for(int i=0; i < ents.size(); i++) {
-			m_EntityManager.addEntity(ents.get(i), false);
-		}
 		
 		saveCheckpoint();
 	}

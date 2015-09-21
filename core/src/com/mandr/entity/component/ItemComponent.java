@@ -8,11 +8,11 @@ import com.mandr.level.Tile;
 import com.mandr.util.StringUtils;
 
 public class ItemComponent extends Component {
-	ItemInfo m_Stats;
+	ItemInfo m_Info;
 	
 	public ItemComponent(Entity entity, ItemInfo stats) {
 		super(entity);
-		m_Stats = stats;
+		m_Info = stats;
 	}
 
 	@Override
@@ -39,18 +39,17 @@ public class ItemComponent extends Component {
 
 	@Override
 	public void collision(Entity other) {
-		if(m_Entity.isFriendly() != other.isFriendly()) return;
-		if(m_Stats == null) return;
+		if(m_Info == null) return;
 		
 		StringUtils.debugPrint("Picked up item!");
 		
-		if(m_Stats.getWeaponID() != -1) {
-			other.addWeapon(Globals.getWeaponStat(m_Stats.getWeaponID()));
+		if(m_Info.getWeaponID() != -1) {
+			other.addWeapon(Globals.getWeaponInfo(m_Info.getWeaponID()));
 		}
-		if(m_Stats.getHealth() != 0) {
+		if(m_Info.getHealth() != 0) {
 			HealthComponent health = (HealthComponent) other.getComponent(ComponentType.COMPONENT_HEALTH);
 			if(health != null) {
-				health.changeHealth(m_Stats.getHealth());
+				health.changeHealth(m_Info.getHealth());
 			}
 		}
 		

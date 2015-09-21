@@ -10,8 +10,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.mandr.entity.component.*;
 import com.mandr.enums.EntityState;
+import com.mandr.game.ProjectileInfo;
 import com.mandr.game.screens.GameScreen;
-import com.mandr.info.EntityInfo;
+import com.mandr.info.ActorInfo;
+import com.mandr.info.ItemInfo;
 import com.mandr.info.WeaponInfo;
 import com.mandr.level.Tile;
 import com.mandr.util.AABB;
@@ -19,7 +21,8 @@ import com.mandr.util.Constants;
 import com.mandr.util.Directions;
 
 /** An entity with components. */
-public class Entity {	
+public class Entity {
+	private int id;
 	private int m_ComponentList;
 	HashMap<ComponentType, Component> m_Components;
 	
@@ -31,19 +34,75 @@ public class Entity {
 	
 	private Vector2 m_LookVector;
 	
-	private boolean m_Dead;
+	private boolean m_Dead = false;
 	
-	private EntityInfo m_Stats;
+	private ActorInfo m_ActorInfo = null;
+	private ItemInfo m_ItemInfo  = null;
+	private ProjectileInfo m_ProjInfo  = null;
+	
 	private boolean m_Friendly;
 	
-	/** Constructs a new Entity with the given parameters
+	/** Constructs a new Item Entity
 	 * x The x-position
 	 * y The y-position
-	 * texture The entity's texture
+	 * item The stats of the entity
+	 * @throw IllegalArgumentException If item is null
+	 * */
+	public Entity(int id, float x, float y, ItemInfo item) {
+		this.id = id;
+		if(item == null) throw new IllegalArgumentException("Item cannot be null!");
+		m_ComponentList = ComponentType.COMPONENT_ITEM.getFlag();
+		m_Components = new HashMap<ComponentType, Component>();
+		
+		m_StartPosition = new Vector2(x,y);
+		m_EndPosition = new Vector2(x,y);
+		m_Size = new Vector2(item.getSizeX(), item.getSizeY());
+		m_State = EntityState.NO_ENTITY_STATE;
+		m_LookVector = new Vector2(1,0);
+		m_ItemInfo = item;
+		
+		// Items render, have gravity (but are static regardless), and have item properties
+		m_ComponentList = ComponentType.COMPONENT_ITEM_LIST.getFlag();
+		m_Components.put(ComponentType.COMPONENT_RENDER, new RenderComponent(this, item.getAnimID()));
+		m_Components.put(ComponentType.COMPONENT_MOVE, new MoveComponent(this, 0));
+		m_Components.put(ComponentType.COMPONENT_ITEM, new ItemComponent(this, item));
+	}
+	
+	/** Constructs a new Projectile Entity
+	 * x The x-position
+	 * y The y-position
+	 * projectile The stats of the entity
+	 * @throw IllegalArgumentException If item is null
+	 * */
+	public Entity(int id, float x, float y, ProjectileInfo proj) {
+		this.id = id;
+		if(proj == null) throw new IllegalArgumentException("Item cannot be null!");
+		m_ComponentList = ComponentType.COMPONENT_ITEM.getFlag();
+		m_Components = new HashMap<ComponentType, Component>();
+		
+		m_StartPosition = new Vector2(x,y);
+		m_EndPosition = new Vector2(x,y);
+		m_Size = new Vector2(proj.getSizeX(), proj.getSizeY());
+		m_State = EntityState.NO_ENTITY_STATE;
+		m_LookVector = new Vector2(1,0);
+		m_ProjInfo = proj;
+		
+		// Items render, have gravity (but are static regardless), and have item properties
+		m_ComponentList = ComponentType.COMPONENT_PROJECTILE_LIST.getFlag();
+		m_Components.put(ComponentType.COMPONENT_RENDER, new RenderComponent(this, proj.getAnimID()));
+		m_Components.put(ComponentType.COMPONENT_MOVE, new MoveComponent(this, 0));
+		m_Components.put(ComponentType.COMPONENT_PROJECTILE, new ProjectileComponent(this));
+	}
+	
+	/** Constructs a new Actor Entity
+	 * x The x-position
+	 * y The y-position
 	 * stats The stats of the entity
+	 * item If the entity is an item
 	 * @throw IllegalArgumentException If stats is null
 	 * */
-	public Entity(float x, float y, EntityInfo stats) {
+	public Entity(int id, float x, float y, ActorInfo stats) {
+		this.id = id;
 		if(stats == null) throw new IllegalArgumentException("Stats cannot be null!");
 		
 		m_ComponentList = stats.getComponents();
@@ -56,9 +115,7 @@ public class Entity {
 		
 		m_Friendly = stats.isFriendly();
 		m_LookVector = new Vector2(1,0);
-	
-		m_Dead = false;
-		m_Stats= stats;
+		m_ActorInfo = stats;
 		
 		// TODO animation should be loaded separately
 		// TODO this cannot possibly be done at object creation. Must load all this separate!!!!
@@ -79,7 +136,6 @@ public class Entity {
 		if(hasComponent(ComponentType.COMPONENT_WEAPON)) 		m_Components.put(ComponentType.COMPONENT_WEAPON, new WeaponComponent(this));
 		if(hasComponent(ComponentType.COMPONENT_HEALTH)) 		m_Components.put(ComponentType.COMPONENT_HEALTH, new HealthComponent(this, stats.getMaxHealth()));
 		if(hasComponent(ComponentType.COMPONENT_PROJECTILE))	m_Components.put(ComponentType.COMPONENT_PROJECTILE, new ProjectileComponent(this));
-		if(hasComponent(ComponentType.COMPONENT_ITEM)) 			m_Components.put(ComponentType.COMPONENT_ITEM, new ItemComponent(this, stats.getItemInfo()));
 	}
 
 	/** Reset the entity and all its components. */
@@ -95,9 +151,6 @@ public class Entity {
 	
 	/** Update the entity */
 	public void update(float deltaTime) {
-		
-		//StringUtils.debugPrint(hasComponent(ComponentType.COMPONENT_ITEM) + " " + m_StartPosition);
-		
 		m_StartPosition.set(m_EndPosition);
 		
 		updateComponent(ComponentType.COMPONENT_CROUCH, deltaTime);
@@ -126,7 +179,7 @@ public class Entity {
 		float leftX = GameScreen.getLevel().getLevelBoundaryX();
 		float bottomY = GameScreen.getLevel().getLevelBoundaryY();
 		
-		if(!m_Stats.isIgnoreScreenBounds()) {
+		if(!isProjectile()) {
 			m_EndPosition.x = Math.max(leftX,  m_EndPosition.x);
 			m_EndPosition.x = Math.min(m_EndPosition.x, GameScreen.getLevel().getWidth() - m_Size.x);			
 		}
@@ -136,9 +189,8 @@ public class Entity {
 			setDead(true);
 		}
 		// If the entity dies off screen, then kill once it has passed screen boundaries
-		else if(m_Stats.isDieOffScreen()) {
-			// TODO: magic number
-			if(!isOnScreen(0.1f)) {
+		else if(isProjectile()) {
+			if(!isOnScreen(Constants.OFF_SCREEN_PADDING_PERCENT)) {
 				setDead(true);
 			}
 		}
@@ -193,10 +245,6 @@ public class Entity {
 	
 	public boolean isDead() {
 		return m_Dead;
-	}
-	
-	public EntityInfo getStats() {
-		return m_Stats;
 	}
 	
 	//=========================================================================
@@ -420,4 +468,13 @@ public class Entity {
 	public void setFriendly(boolean friendly) {
 		m_Friendly = friendly;
 	}
+	
+	public int getID() { return id; }
+	public boolean isActor() { return m_ActorInfo != null; }
+	public boolean isItem() { return m_ItemInfo != null; }
+	public boolean isProjectile() { return m_ProjInfo != null; }
+	
+	public ActorInfo getActorInfo() { return m_ActorInfo; }
+	public ItemInfo getItemInfo() { return m_ItemInfo; }
+	public ProjectileInfo getProjectileInfo() { return m_ProjInfo; }
 }
